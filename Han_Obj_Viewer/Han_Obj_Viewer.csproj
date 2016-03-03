@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Data_ColorMap.cs" />
     <Compile Include="Data_Geometry.cs" />
+    <Compile Include="Data_GeometryRoot.cs" />
     <Compile Include="Obj_Loader.cs" />
     <Compile Include="SharpGLForm.cs">
       <SubType>Form</SubType>

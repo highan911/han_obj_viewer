@@ -5,16 +5,10 @@ using System.Text;
 
 namespace Han_Obj_Viewer
 {
-    public class ColorMap : Dictionary<int, float[]>//Point, Color
+
+    public class ColorMap : Dictionary<int, float[]>
     {
         public static float[] Zero = { 0, 1, 0 };
-        public ColorMap(Points points)
-        {
-            foreach (int key in points.Keys)
-            {
-                this.Add(key, Zero);
-            }
-        }
         public void SetData(int key, double value)
         {
             if (this.ContainsKey(key))
@@ -56,5 +50,37 @@ namespace Han_Obj_Viewer
             }
             return ColorFloats;
         }
+
+        public bool SetDataArray(List<double> array)
+        {
+            if (array.Count != this.Count) return false;
+            double max = array.Max();
+            double min = array.Min();
+            for (int i = 0; i < this.Count; i++)
+            {
+                this.SetData(i, array[i]);
+            }
+            foreach (double value in array)
+            {
+            }
+            return true;
+        }
+
+    }
+
+    public class PointColorMap : ColorMap//Point, Color
+    {
+        
+        public PointColorMap(Points points)
+        {
+            for (int i = 0; i < points.Count; i++)
+            {
+                this.Add(i, Zero);
+            }
+        }
+        
+
+        
+
     }
 }

@@ -10,50 +10,7 @@ namespace Han_Obj_Viewer
     public class Model_Loader
     {
         public string Path;
-        public Points Points;
-        public Edges Edges;
-        public Triangles Triangles;
-
-        public void Show(OpenGL gl)
-        {
-            gl.Begin(OpenGL.GL_TRIANGLES);
-            gl.Color(0.5f, 0.5f, 0.5f);
-            foreach (Triangle triangle in Triangles)
-            {
-                gl.Vertex(triangle.P0.XYZ.ToArray());
-                gl.Vertex(triangle.P1.XYZ.ToArray());
-                gl.Vertex(triangle.P2.XYZ.ToArray());
-            }
-            gl.End();
-        }
-
-        public void ShowEdge(OpenGL gl)
-        {
-            gl.Begin(OpenGL.GL_LINES);
-            gl.Color(1.0f, 1.0f, 1.0f);
-            foreach (Edge edge in Edges.Values)
-            {
-                gl.Vertex(edge.P0.XYZ.ToArray());
-                gl.Vertex(edge.P1.XYZ.ToArray());
-            }
-            gl.End();
-        }
-
-        public void ShowColorMap(OpenGL gl, ColorMap colorMap)
-        {
-            gl.Begin(OpenGL.GL_TRIANGLES);
-            foreach (Triangle triangle in Triangles)
-            {
-                gl.Color(colorMap[triangle.P0.Id]);
-                gl.Vertex(triangle.P0.XYZ.ToArray());
-                gl.Color(colorMap[triangle.P1.Id]);
-                gl.Vertex(triangle.P1.XYZ.ToArray());
-                gl.Color(colorMap[triangle.P2.Id]);
-                gl.Vertex(triangle.P2.XYZ.ToArray());
-            }
-            gl.End();
-        }
-
+        public GeometryObject GeometryObject;
     }
 
     public class Obj_Loader : Model_Loader
@@ -61,11 +18,7 @@ namespace Han_Obj_Viewer
         public Obj_Loader(string path)
         {
             Path = path;
-            Points = new Points();
-            Edges = new Edges();
-            Triangles = new Triangles();
-            Triangles.Points = Points;
-            Triangles.Edges = Edges;
+            GeometryObject = new GeometryObject();
             Load();
         }
 
@@ -82,14 +35,14 @@ namespace Han_Obj_Viewer
                     {
                         if(tokens.Length==4)
                         {
-                            Points.Insert(tokens[1].ToDouble(), tokens[2].ToDouble(), tokens[3].ToDouble());
+                            GeometryObject.Points.Insert(tokens[1].ToDouble(), tokens[2].ToDouble(), tokens[3].ToDouble());
                         }
                     }
                     else if (tokens[0] == "f")
                     {
                         if (tokens.Length == 4)
                         {
-                            Triangles.Insert(tokens[1].ToInt(), tokens[2].ToInt(), tokens[3].ToInt());
+                            GeometryObject.Triangles.Insert(tokens[1].ToInt() - 1, tokens[2].ToInt() - 1, tokens[3].ToInt() - 1);
                         }
                     }
                     else
@@ -106,11 +59,7 @@ namespace Han_Obj_Viewer
         public Off_Loader(string path)
         {
             Path = path;
-            Points = new Points();
-            Edges = new Edges();
-            Triangles = new Triangles();
-            Triangles.Points = Points;
-            Triangles.Edges = Edges;
+            GeometryObject = new GeometryObject();
             Load();
         }
 
@@ -128,7 +77,7 @@ namespace Han_Obj_Viewer
                     string[] tokens = reader.ReadLine().Trim().Split(' ');
                     if (tokens.Length == 3)
                     {
-                        Points.Insert(tokens[0].ToDouble(), tokens[1].ToDouble(), tokens[2].ToDouble());
+                        GeometryObject.Points.Insert(tokens[0].ToDouble(), tokens[1].ToDouble(), tokens[2].ToDouble());
                     }
                 }
                 catch
@@ -142,7 +91,7 @@ namespace Han_Obj_Viewer
                     string[] tokens = reader.ReadLine().Trim().Split(' ');
                     if (tokens.Length == 4 && tokens[0] == "3")
                     {
-                        Triangles.Insert(tokens[1].ToInt() + 1, tokens[2].ToInt() + 1, tokens[3].ToInt() + 1);
+                        GeometryObject.Triangles.Insert(tokens[1].ToInt(), tokens[2].ToInt(), tokens[3].ToInt());
                     }
                 }
                 catch

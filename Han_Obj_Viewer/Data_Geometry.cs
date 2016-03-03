@@ -136,20 +136,23 @@ namespace Han_Obj_Viewer
         public Edge E0;//01
         public Edge E1;//12
         public Edge E2;//02
-        public XYZ Normal;
+        public XYZ Normal()
+        {
+            return XYZ.GetNormal(P0.XYZ, P1.XYZ, P2.XYZ);
+        }
         public Triangle(int id)
         {
             Id = id;
         }
     }
 
-    public class Points : Dictionary<int, Point>
+    public class Points : List<Point>
     {
         public Point Insert(double x, double y, double z)
         {
             XYZ xyz = new XYZ(x, y, z);
             Point p = new Point(this.Count + 1, xyz);
-            this.Add(this.Count + 1, p);
+            this.Add(p);
             return p;
         }
     }
@@ -208,7 +211,7 @@ namespace Han_Obj_Viewer
                 triangle.E0 = E0;
                 triangle.E1 = E1;
                 triangle.E2 = E2;
-                triangle.Normal = XYZ.GetNormal(P0.XYZ, P1.XYZ, P2.XYZ);
+                //triangle.Normal = XYZ.GetNormal(P0.XYZ, P1.XYZ, P2.XYZ);
 
                 E0.Triangles.Add(triangle);
                 E1.Triangles.Add(triangle);
