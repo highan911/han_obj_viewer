@@ -40,7 +40,7 @@ namespace Han_Obj_Viewer
         public void ShowEdge(OpenGL gl)
         {
             gl.Begin(OpenGL.GL_LINES);
-            gl.Color(1.0f, 1.0f, 1.0f);
+            gl.Color(0, 0, 0);
             foreach (Edge edge in Edges.Values)
             {
                 gl.Vertex(edge.P0.XYZ.ToArray());
@@ -49,7 +49,7 @@ namespace Han_Obj_Viewer
             gl.End();
         }
 
-        public void ShowPointColorMap(OpenGL gl, PointColorMap colorMap)
+        public void ShowPointColorMap(OpenGL gl, ColorMap colorMap)
         {
             gl.Begin(OpenGL.GL_TRIANGLES);
             foreach (Triangle triangle in Triangles)
@@ -62,6 +62,35 @@ namespace Han_Obj_Viewer
                 gl.Vertex(triangle.P2.XYZ.ToArray());
             }
             gl.End();
+        }
+
+        public void ShowFaceColorMap(OpenGL gl, ColorMap colorMap)
+        {
+            gl.Begin(OpenGL.GL_TRIANGLES);
+            foreach (Triangle triangle in Triangles)
+            {
+                gl.Color(colorMap[triangle.Id]);
+                gl.Vertex(triangle.P0.XYZ.ToArray());
+                gl.Vertex(triangle.P1.XYZ.ToArray());
+                gl.Vertex(triangle.P2.XYZ.ToArray());
+            }
+            gl.End();
+        }
+
+        internal void DrawMarkedPoints(OpenGL gl, List<int> MarkedPoints)
+        {
+            if (MarkedPoints.Count > 0)
+            {
+                gl.Begin(OpenGL.GL_POINTS);
+                gl.Color(1, 0, 0);
+                gl.Vertex(Points[MarkedPoints[0]].XYZ.ToArray());
+                gl.Color(0, 1, 0);
+                for (int i = 1; i < MarkedPoints.Count; i++)
+                {
+                    gl.Vertex(Points[MarkedPoints[i]].XYZ.ToArray());
+                }
+                gl.End();
+            }
         }
     }
 

@@ -102,6 +102,42 @@ namespace Han_Obj_Viewer
             Id = id;
             Edges = new List<Edge>();
         }
+
+        public List<int> GetNeighborPoints()
+        {
+            List<int> list = new List<int>();
+
+            foreach (Edge edge in Edges)
+            {
+                if (edge.P0.Id != this.Id)
+                {
+                    list.Add(edge.P0.Id);
+                }
+                else
+                {
+                    list.Add(edge.P1.Id);
+                }
+            }
+            return list;
+        }
+
+        public List<int> GetNeighborFaces()
+        {
+            List<int> list = new List<int>();
+
+            foreach (Edge edge in Edges)
+            {
+                foreach (Triangle tri in edge.Triangles)
+                {
+                    if (!list.Contains(tri.Id))
+                    {
+                        list.Add(tri.Id);
+                    }
+                }
+            }
+            return list;
+        }
+
     }
 
     public class Edge
@@ -144,6 +180,34 @@ namespace Han_Obj_Viewer
         {
             Id = id;
         }
+
+        public List<int> GetNeighborFaces()
+        {
+            List<int> list = new List<int>();
+            foreach (Triangle tri in E0.Triangles)
+            {
+                if (!(tri.Id == this.Id) && !list.Contains(tri.Id))
+                {
+                    list.Add(tri.Id);
+                }
+            }
+            foreach (Triangle tri in E1.Triangles)
+            {
+                if (!(tri.Id == this.Id) && !list.Contains(tri.Id))
+                {
+                    list.Add(tri.Id);
+                }
+            }
+            foreach (Triangle tri in E2.Triangles)
+            {
+                if (!(tri.Id == this.Id) && !list.Contains(tri.Id))
+                {
+                    list.Add(tri.Id);
+                }
+            }
+            return list;
+        }
+
     }
 
     public class Points : List<Point>
@@ -151,7 +215,7 @@ namespace Han_Obj_Viewer
         public Point Insert(double x, double y, double z)
         {
             XYZ xyz = new XYZ(x, y, z);
-            Point p = new Point(this.Count + 1, xyz);
+            Point p = new Point(this.Count, xyz);
             this.Add(p);
             return p;
         }
@@ -180,7 +244,7 @@ namespace Han_Obj_Viewer
             }
             else
             {
-                edge = new Edge(this.Count + 1, P0, P1);
+                edge = new Edge(this.Count, P0, P1);
                 this.Add(index, edge);
             }
             P0.Edges.Add(edge);
@@ -204,7 +268,7 @@ namespace Han_Obj_Viewer
                 Edge E1 = Edges.Insert(P1, P2);
                 Edge E2 = Edges.Insert(P2, P0);
 
-                Triangle triangle = new Triangle(this.Count + 1);
+                Triangle triangle = new Triangle(this.Count);
                 triangle.P0 = P0;
                 triangle.P1 = P1;
                 triangle.P2 = P2;

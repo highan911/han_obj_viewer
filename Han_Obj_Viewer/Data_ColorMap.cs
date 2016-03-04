@@ -8,7 +8,11 @@ namespace Han_Obj_Viewer
 
     public class ColorMap : Dictionary<int, float[]>
     {
-        public static float[] Zero = { 0, 1, 0 };
+        public static float[] R = { 1, 0, 0 };
+        public static float[] G = { 0, 1, 0 };
+        public static float[] B = { 0, 0, 1 };
+        public static float[] D = { 0.5f, 0.5f, 0.5f };
+
         public void SetData(int key, double value)
         {
             if (this.ContainsKey(key))
@@ -58,29 +62,44 @@ namespace Han_Obj_Viewer
             double min = array.Min();
             for (int i = 0; i < this.Count; i++)
             {
-                this.SetData(i, array[i]);
-            }
-            foreach (double value in array)
-            {
+                this.SetData(i, (array[i] - min) / (max - min));
             }
             return true;
         }
 
-    }
-
-    public class PointColorMap : ColorMap//Point, Color
-    {
-        
-        public PointColorMap(Points points)
+        public ColorMap(Points points)
         {
             for (int i = 0; i < points.Count; i++)
             {
-                this.Add(i, Zero);
+                this.Add(i, D);
             }
         }
-        
 
-        
-
+        public ColorMap(Triangles triangles, List<int> tids = null)
+        {
+            for (int i = 0; i < triangles.Count; i++)
+            {
+                if (tids != null && tids.Count > 0)
+                {
+                    if (i == tids[0])
+                    {
+                        this.Add(i, R);
+                    }
+                    else if (tids.Contains(i))
+                    {
+                        this.Add(i, G);
+                    }
+                    else
+                    {
+                        this.Add(i, B);
+                    }
+                }
+                else
+                {
+                    this.Add(i, B);
+                }
+            }
+        }
     }
+
 }

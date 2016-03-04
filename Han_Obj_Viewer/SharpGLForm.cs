@@ -36,10 +36,14 @@ namespace Han_Obj_Viewer
         double cameraDist = 5;
         float angleV = 45, angleH = 45;
 
-        PointColorMap colorMap;
+        ColorMap colorMap;
         GeometryObject currentGeometryObject;
+        List<int> MarkedPoints = new List<int>();
+        List<Edge> MarkedLines = new List<Edge>(); 
 
         public DisplayMode displayMode = DisplayMode.DEFAULT;
+        Form_Id form_Id;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SharpGLForm"/> class.
@@ -128,10 +132,23 @@ namespace Han_Obj_Viewer
                         {
                             currentGeometryObject.ShowPointColorMap(gl, colorMap);
                         }
-                        catch
+                        catch (Exception ex)
                         {
                             displayMode = DisplayMode.DEFAULT;
-                            MessageBox.Show("Error: No Color Map");
+                            MessageBox.Show(ex.Message + ex.StackTrace);
+                        }
+                        break;
+                    case DisplayMode.FACECOLORMAP:
+                        try
+                        {
+                            currentGeometryObject.ShowFaceColorMap(gl, colorMap);
+                            currentGeometryObject.ShowEdge(gl);
+                            currentGeometryObject.DrawMarkedPoints(gl, MarkedPoints);
+                        }
+                        catch (Exception ex)
+                        {
+                            displayMode = DisplayMode.DEFAULT;
+                            MessageBox.Show(ex.Message + ex.StackTrace);
                         }
                         break;
                 }
@@ -285,6 +302,7 @@ namespace Han_Obj_Viewer
 
         private void changeCurrentMesh(string filename)
         {
+            displayMode = DisplayMode.DEFAULT;
             currentGeometryObject = geometryRoot[filename];
             foreach (ToolStripItem item in currentMeshToolStripMenuItem.DropDownItems)
             {
@@ -306,21 +324,73 @@ namespace Han_Obj_Viewer
                 return;
             }
             StreamReader reader = new StreamReader(path);
-            colorMap = new PointColorMap(currentGeometryObject.Points);
+            colorMap = new ColorMap(currentGeometryObject.Triangles);
+
+            List<double> dataset = new List<double>();
 
             for (int i = 0; i < colorMap.Count; i++)
             {
                 try
                 {
                     string line = reader.ReadLine();
+                    dataset.Add(double.Parse(line));
                 }
                 catch
                 {
                     break;
                 }
             }
-
+            colorMap.SetDataArray(dataset);
+            displayMode = DisplayMode.FACECOLORMAP;
         }
 
+        private void pointNeighborToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MarkedPoints.Clear();
+            MarkedLines.Clear();
+            form_Id = new Form_Id(currentGeometryObject.Points.Count, Form_IdType.POINT, this);
+            form_Id.Show();
+        }
+
+        private void faceNeighborToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MarkedPoints.Clear();
+            MarkedLines.Clear();
+            form_Id = new Form_Id(currentGeometryObject.Points.Count, Form_IdType.FACE, this);
+            form_Id.Show();
+        }
+
+
+        internal void resetFaceNeighborColorMap(int tid)
+        {
+            if (currentGeometryObject == null)
+            {
+                MessageBox.Show("Please load a mesh");
+                return;
+            }
+            List<int> tids = new List<int>();
+            tids.Add(tid);
+            tids.AddRange(currentGeometryObject.Triangles[tid].GetNeighborFaces());
+            colorMap = new ColorMap(currentGeometryObject.Triangles, tids);
+            displayMode = DisplayMode.FACECOLORMAP;
+        }
+
+        internal void resetPointNeighborColorMap(int pid)
+        {
+            if (currentGeometryObject == null)
+            {
+                MessageBox.Show("Please load a mesh");
+                return;
+            }
+            
+            List<int> tids = new List<int>();
+            tids.Add(-1);
+            tids.AddRange(currentGeometryObject.Points[pid].GetNeighborFaces());
+            colorMap = new ColorMap(currentGeometryObject.Triangles, tids);
+            MarkedPoints.Clear();
+            MarkedPoints.Add(pid);
+            MarkedPoints.AddRange(currentGeometryObject.Points[pid].GetNeighborPoints());
+            displayMode = DisplayMode.FACECOLORMAP;
+        }
     }
 }
