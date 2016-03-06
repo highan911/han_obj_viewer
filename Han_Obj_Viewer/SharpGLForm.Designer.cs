@@ -33,11 +33,13 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadLabelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadPointLabelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.meshCompareToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pointNeighborToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.faceNeighborToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.faceNormalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -76,7 +78,8 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadToolStripMenuItem,
-            this.loadLabelToolStripMenuItem});
+            this.loadLabelToolStripMenuItem,
+            this.loadPointLabelToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
             this.fileToolStripMenuItem.Text = "File";
@@ -84,16 +87,23 @@
             // loadToolStripMenuItem
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(194, 24);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(199, 24);
             this.loadToolStripMenuItem.Text = "Load Mesh";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
             // loadLabelToolStripMenuItem
             // 
             this.loadLabelToolStripMenuItem.Name = "loadLabelToolStripMenuItem";
-            this.loadLabelToolStripMenuItem.Size = new System.Drawing.Size(194, 24);
+            this.loadLabelToolStripMenuItem.Size = new System.Drawing.Size(199, 24);
             this.loadLabelToolStripMenuItem.Text = "Load Face Label";
-            this.loadLabelToolStripMenuItem.Click += new System.EventHandler(this.loadLabelToolStripMenuItem_Click);
+            this.loadLabelToolStripMenuItem.Click += new System.EventHandler(this.loadFaceLabelToolStripMenuItem_Click);
+            // 
+            // loadPointLabelToolStripMenuItem
+            // 
+            this.loadPointLabelToolStripMenuItem.Name = "loadPointLabelToolStripMenuItem";
+            this.loadPointLabelToolStripMenuItem.Size = new System.Drawing.Size(199, 24);
+            this.loadPointLabelToolStripMenuItem.Text = "Load Point Label";
+            this.loadPointLabelToolStripMenuItem.Click += new System.EventHandler(this.loadPointLabelToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -101,7 +111,8 @@
             this.currentMeshToolStripMenuItem,
             this.meshCompareToolStripMenuItem,
             this.pointNeighborToolStripMenuItem,
-            this.faceNeighborToolStripMenuItem});
+            this.faceNeighborToolStripMenuItem,
+            this.faceNormalToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(73, 24);
             this.editToolStripMenuItem.Text = "Display";
@@ -132,6 +143,13 @@
             this.faceNeighborToolStripMenuItem.Size = new System.Drawing.Size(190, 24);
             this.faceNeighborToolStripMenuItem.Text = "Face Neighbor";
             this.faceNeighborToolStripMenuItem.Click += new System.EventHandler(this.faceNeighborToolStripMenuItem_Click);
+            // 
+            // faceNormalToolStripMenuItem
+            // 
+            this.faceNormalToolStripMenuItem.Name = "faceNormalToolStripMenuItem";
+            this.faceNormalToolStripMenuItem.Size = new System.Drawing.Size(190, 24);
+            this.faceNormalToolStripMenuItem.Text = "Face Normal";
+            this.faceNormalToolStripMenuItem.Click += new System.EventHandler(this.faceNormalToolStripMenuItem_Click);
             // 
             // SharpGLForm
             // 
@@ -164,6 +182,8 @@
         private System.Windows.Forms.ToolStripMenuItem meshCompareToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pointNeighborToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem faceNeighborToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadPointLabelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem faceNormalToolStripMenuItem;
     }
 }
 
