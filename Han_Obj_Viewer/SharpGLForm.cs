@@ -358,6 +358,55 @@ namespace Han_Obj_Viewer
             displayMode = DisplayMode.FACECOLORMAP;
         }
 
+        private void loadPointLabelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (currentGeometryObject == null)
+            {
+                MessageBox.Show("Please load a mesh");
+                return;
+            }
+            string path = null;
+            if (!FileSelect(out path))
+            {
+                return;
+            }
+            StreamReader reader = new StreamReader(path);
+            colorMap = new ColorMap(currentGeometryObject.Triangles);
+            MarkedPoints.Clear();
+            MarkedPoints.Add(-1);
+            for (int i = 0; i < colorMap.Count; i++)
+            {
+                try
+                {
+                    string line = reader.ReadLine();
+                    MarkedPoints.Add(int.Parse(line));
+                }
+                catch
+                {
+                    break;
+                }
+            }
+            List<double> dataset = new List<double>();
+
+            foreach (Triangle tri in currentGeometryObject.Triangles)
+            {
+                int c = 0;
+                if (MarkedPoints.Contains(tri.P0.Id)) c++;
+                if (MarkedPoints.Contains(tri.P1.Id)) c++;
+                if (MarkedPoints.Contains(tri.P2.Id)) c++;
+                if (c >= 2)
+                {
+                    dataset.Add(1);
+                }
+                else
+                {
+                    dataset.Add(0);
+                }
+            }
+            colorMap.SetDataArray(dataset);
+            displayMode = DisplayMode.FACECOLORMAP;
+        }
+
         private void pointNeighborToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MarkedPoints.Clear();
@@ -374,6 +423,13 @@ namespace Han_Obj_Viewer
             form_Id.Show();
         }
 
+        private void faceNormalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MarkedPoints.Clear();
+            MarkedLines.Clear();
+            form_Id = new Form_Id(currentGeometryObject.Triangles.Count, Form_IdType.FACE_NORMAL, this);
+            form_Id.Show();
+        }
 
         internal void resetFaceNeighborColorMap(int tid)
         {
@@ -396,7 +452,7 @@ namespace Han_Obj_Viewer
                 MessageBox.Show("Please load a mesh");
                 return;
             }
-            
+
             List<int> tids = new List<int>();
             tids.Add(-1);
             tids.AddRange(currentGeometryObject.Points[pid].GetNeighborFaces());
@@ -405,19 +461,6 @@ namespace Han_Obj_Viewer
             MarkedPoints.Add(pid);
             MarkedPoints.AddRange(currentGeometryObject.Points[pid].GetNeighborPoints());
             displayMode = DisplayMode.FACECOLORMAP;
-        }
-
-        private void loadPointLabelToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void faceNormalToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MarkedPoints.Clear();
-            MarkedLines.Clear();
-            form_Id = new Form_Id(currentGeometryObject.Triangles.Count, Form_IdType.FACE_NORMAL, this);
-            form_Id.Show();
         }
 
         internal void resetFaceNormalColorMap(int tid)
