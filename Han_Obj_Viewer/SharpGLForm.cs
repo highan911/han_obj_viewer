@@ -188,7 +188,7 @@ namespace Han_Obj_Viewer
 
             //  Set the clear color.
             gl.ClearColor(0.1f, 0.1f, 0.2f, 1.0f);
-            //gl.ShadeModel(OpenGL.GL_SMOOTH);
+            gl.ShadeModel(OpenGL.GL_SMOOTH);
         }
 
         /// <summary>
