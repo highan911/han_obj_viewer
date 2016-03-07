@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharpGL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,11 +38,12 @@ namespace Han_Obj_Viewer
             return new XYZ(x, y, z);
         }
 
-        public void Scale(double s)
+        public XYZ Scale(double s)
         {
             this.X = this.X * s;
             this.Y = this.Y * s;
             this.Z = this.Z * s;
+            return this;
         }
 
         public static double GetDotProduct(XYZ p1, XYZ p2)
@@ -65,6 +67,15 @@ namespace Han_Obj_Viewer
             return Math.Sqrt(X * X + Y * Y + Z * Z);
         }
 
+        public static XYZ Add(XYZ p1, XYZ p2)
+        {
+            double x = p1.X + p2.X;
+            double y = p1.Y + p2.Y;
+            double z = p1.Z + p2.Z;
+            XYZ p = new XYZ(x, y, z);
+            return p;
+        }
+
         public static XYZ Minus(XYZ p1, XYZ p2)
         {
             double x = p1.X - p2.X;
@@ -81,6 +92,19 @@ namespace Han_Obj_Viewer
             return GetXProduct(a1, a2).Normalize();
         }
 
+        public static XYZ Mean(params XYZ[] ps)
+        {
+            double x = 0, y = 0, z = 0;
+            foreach (XYZ p in ps)
+            {
+                x += p.X;
+                y += p.Y;
+                z += p.Z;
+            }
+            XYZ pout = new XYZ(x / 3, y / 3, z / 3);
+            return pout;
+        }
+
         public double[] ToArray()
         {
             double[] array = new double[3];
@@ -88,6 +112,44 @@ namespace Han_Obj_Viewer
             array[1] = Y;
             array[2] = Z;
             return array;
+        }
+    }
+
+    public class Line : List<XYZ> { }
+    public class PointDraw3D
+    {
+        public XYZ C;
+        public double R;
+
+        public PointDraw3D(XYZ c, double r = 0.002)
+        {
+            C = c;
+            R = r;
+        }
+
+        public List<double[]> ToArrays()
+        {
+            List<double[]> array = new List<double[]>();
+            array.Add(new double[] { C.X + R, C.Y, C.Z});
+            array.Add(new double[] { C.X, C.Y + R, C.Z });
+            array.Add(new double[] { C.X, C.Y, C.Z + R });
+            array.Add(new double[] { C.X - R, C.Y, C.Z });
+            array.Add(new double[] { C.X, C.Y - R, C.Z });
+            array.Add(new double[] { C.X, C.Y, C.Z - R });
+            return array;
+        }
+
+        public void Draw(OpenGL gl)
+        {
+            List<double[]> array = this.ToArrays();
+            gl.Vertex(array[0]); gl.Vertex(array[1]); gl.Vertex(array[2]);
+            gl.Vertex(array[0]); gl.Vertex(array[1]); gl.Vertex(array[5]);
+            gl.Vertex(array[0]); gl.Vertex(array[4]); gl.Vertex(array[2]);
+            gl.Vertex(array[0]); gl.Vertex(array[4]); gl.Vertex(array[5]);
+            gl.Vertex(array[3]); gl.Vertex(array[1]); gl.Vertex(array[2]);
+            gl.Vertex(array[3]); gl.Vertex(array[1]); gl.Vertex(array[5]);
+            gl.Vertex(array[3]); gl.Vertex(array[4]); gl.Vertex(array[2]);
+            gl.Vertex(array[3]); gl.Vertex(array[4]); gl.Vertex(array[5]);
         }
     }
 

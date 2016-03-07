@@ -81,13 +81,19 @@ namespace Han_Obj_Viewer
         {
             if (MarkedPoints.Count > 0)
             {
-                gl.Begin(OpenGL.GL_POINTS);
-                gl.Color(1, 0, 0);
-                gl.Vertex(Points[MarkedPoints[0]].XYZ.ToArray());
-                gl.Color(0, 1, 0);
+                PointDraw3D P;
+                gl.Begin(OpenGL.GL_TRIANGLES);
+                gl.Color(1.0f, 0f, 0);
+                if (MarkedPoints[0] >= 0)
+                {
+                    P = new PointDraw3D(Points[MarkedPoints[0]].XYZ);
+                    P.Draw(gl);
+                }
+                gl.Color(1.0f, 1.0f, 0);
                 for (int i = 1; i < MarkedPoints.Count; i++)
                 {
-                    gl.Vertex(Points[MarkedPoints[i]].XYZ.ToArray());
+                    P = new PointDraw3D(Points[MarkedPoints[i]].XYZ);
+                    P.Draw(gl);
                 }
                 gl.End();
             }
