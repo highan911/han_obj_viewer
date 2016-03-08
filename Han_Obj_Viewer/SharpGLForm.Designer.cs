@@ -36,7 +36,6 @@
             this.loadPointLabelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.meshCompareToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pointNeighborToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.faceNeighborToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.faceNormalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -87,29 +86,28 @@
             // loadToolStripMenuItem
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(199, 24);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(271, 24);
             this.loadToolStripMenuItem.Text = "Load Mesh";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
             // loadLabelToolStripMenuItem
             // 
             this.loadLabelToolStripMenuItem.Name = "loadLabelToolStripMenuItem";
-            this.loadLabelToolStripMenuItem.Size = new System.Drawing.Size(199, 24);
+            this.loadLabelToolStripMenuItem.Size = new System.Drawing.Size(271, 24);
             this.loadLabelToolStripMenuItem.Text = "Load Face Label";
             this.loadLabelToolStripMenuItem.Click += new System.EventHandler(this.loadFaceLabelToolStripMenuItem_Click);
             // 
             // loadPointLabelToolStripMenuItem
             // 
             this.loadPointLabelToolStripMenuItem.Name = "loadPointLabelToolStripMenuItem";
-            this.loadPointLabelToolStripMenuItem.Size = new System.Drawing.Size(199, 24);
-            this.loadPointLabelToolStripMenuItem.Text = "Load Point Label";
+            this.loadPointLabelToolStripMenuItem.Size = new System.Drawing.Size(271, 24);
+            this.loadPointLabelToolStripMenuItem.Text = "Load Point Selection Label";
             this.loadPointLabelToolStripMenuItem.Click += new System.EventHandler(this.loadPointLabelToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.currentMeshToolStripMenuItem,
-            this.meshCompareToolStripMenuItem,
             this.pointNeighborToolStripMenuItem,
             this.faceNeighborToolStripMenuItem,
             this.faceNormalToolStripMenuItem});
@@ -123,12 +121,6 @@
             this.currentMeshToolStripMenuItem.Size = new System.Drawing.Size(190, 24);
             this.currentMeshToolStripMenuItem.Text = "Current Mesh";
             this.currentMeshToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.currentMeshToolStripMenuItem_DropDownItemClicked);
-            // 
-            // meshCompareToolStripMenuItem
-            // 
-            this.meshCompareToolStripMenuItem.Name = "meshCompareToolStripMenuItem";
-            this.meshCompareToolStripMenuItem.Size = new System.Drawing.Size(190, 24);
-            this.meshCompareToolStripMenuItem.Text = "Mesh Compare";
             // 
             // pointNeighborToolStripMenuItem
             // 
@@ -179,7 +171,6 @@
         private System.Windows.Forms.ToolStripMenuItem loadLabelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem currentMeshToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem meshCompareToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pointNeighborToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem faceNeighborToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadPointLabelToolStripMenuItem;
