@@ -39,6 +39,7 @@
             this.pointNeighborToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.faceNeighborToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.faceNormalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadPointLabelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -78,6 +79,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadToolStripMenuItem,
             this.loadLabelToolStripMenuItem,
+            this.loadPointLabelToolStripMenuItem1,
             this.loadPointLabelToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
@@ -102,7 +104,7 @@
             this.loadPointLabelToolStripMenuItem.Name = "loadPointLabelToolStripMenuItem";
             this.loadPointLabelToolStripMenuItem.Size = new System.Drawing.Size(271, 24);
             this.loadPointLabelToolStripMenuItem.Text = "Load Point Selection Label";
-            this.loadPointLabelToolStripMenuItem.Click += new System.EventHandler(this.loadPointLabelToolStripMenuItem_Click);
+            this.loadPointLabelToolStripMenuItem.Click += new System.EventHandler(this.loadPointSelectionLabelToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -143,6 +145,13 @@
             this.faceNormalToolStripMenuItem.Text = "Face Normal";
             this.faceNormalToolStripMenuItem.Click += new System.EventHandler(this.faceNormalToolStripMenuItem_Click);
             // 
+            // loadPointLabelToolStripMenuItem1
+            // 
+            this.loadPointLabelToolStripMenuItem1.Name = "loadPointLabelToolStripMenuItem1";
+            this.loadPointLabelToolStripMenuItem1.Size = new System.Drawing.Size(271, 24);
+            this.loadPointLabelToolStripMenuItem1.Text = "Load Point Label";
+            this.loadPointLabelToolStripMenuItem1.Click += new System.EventHandler(this.loadPointLabelToolStripMenuItem_Click);
+            // 
             // SharpGLForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -175,6 +184,7 @@
         private System.Windows.Forms.ToolStripMenuItem faceNeighborToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadPointLabelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem faceNormalToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadPointLabelToolStripMenuItem1;
     }
 }
 

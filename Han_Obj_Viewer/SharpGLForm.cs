@@ -58,8 +58,8 @@ namespace Han_Obj_Viewer
         public bool Load_Mesh()
         {
             string path = null;
-            //string dir = System.Environment.CurrentDirectory;
-            string dir = @"D:\workspace_cs\Han_Obj_Viewer\refer\hw1_realse\";
+            string dir = System.Environment.CurrentDirectory;
+            //string dir = @"D:\workspace_cs\Han_Obj_Viewer\refer\hw1_realse\";
             if (!MeshFileSelect(out path, dir))
             {
                 return false;
@@ -93,15 +93,6 @@ namespace Han_Obj_Viewer
             }
             newitem.BackColor = SystemColors.ControlDarkDark;
 
-            //colorMap = new ColorMap(currentGeometryObject.Points);
-            //int n = currentGeometryObject.Points.Count;
-            //int i = 0;
-            //foreach (int point in currentGeometryObject.Points.Keys)
-            //{
-            //    colorMap.SetData(point, (double)i / (double)n);
-            //    i++;
-            //}
-
             MarkedLines.Clear();
             MarkedPoints.Clear();
             return true;
@@ -122,6 +113,8 @@ namespace Han_Obj_Viewer
             gl.Scale(currentScale, currentScale, currentScale);
             DrawAxis(gl);
 
+
+
             if (currentGeometryObject != null)
             {
                 switch (displayMode)
@@ -134,6 +127,7 @@ namespace Han_Obj_Viewer
                         try
                         {
                             currentGeometryObject.ShowPointColorMap(gl, colorMap);
+                            currentGeometryObject.ShowEdge(gl);
                         }
                         catch (Exception ex)
                         {
@@ -358,7 +352,42 @@ namespace Han_Obj_Viewer
             displayMode = DisplayMode.FACECOLORMAP;
         }
 
+
+
         private void loadPointLabelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (currentGeometryObject == null)
+            {
+                MessageBox.Show("Please load a mesh");
+                return;
+            }
+            string path = null;
+            if (!FileSelect(out path))
+            {
+                return;
+            }
+
+            StreamReader reader = new StreamReader(path);
+            colorMap = new ColorMap(currentGeometryObject.Points);
+
+            List<double> dataset = new List<double>();
+            for (int i = 0; i < colorMap.Count; i++)
+            {
+                try
+                {
+                    string line = reader.ReadLine();
+                    dataset.Add(double.Parse(line));
+                }
+                catch
+                {
+                    break;
+                }
+            }
+            colorMap.SetDataArray(dataset);
+            displayMode = DisplayMode.POINTCOLORMAP;
+        }
+
+        private void loadPointSelectionLabelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (currentGeometryObject == null)
             {
@@ -409,6 +438,11 @@ namespace Han_Obj_Viewer
 
         private void pointNeighborToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (currentGeometryObject == null)
+            {
+                MessageBox.Show("Please load a mesh");
+                return;
+            }
             MarkedPoints.Clear();
             MarkedLines.Clear();
             form_Id = new Form_Id(currentGeometryObject.Points.Count, Form_IdType.POINT_NEIGHBOR, this);
@@ -417,6 +451,11 @@ namespace Han_Obj_Viewer
 
         private void faceNeighborToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (currentGeometryObject == null)
+            {
+                MessageBox.Show("Please load a mesh");
+                return;
+            }
             MarkedPoints.Clear();
             MarkedLines.Clear();
             form_Id = new Form_Id(currentGeometryObject.Triangles.Count, Form_IdType.FACE_NEIGHBOR, this);
@@ -425,6 +464,11 @@ namespace Han_Obj_Viewer
 
         private void faceNormalToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (currentGeometryObject == null)
+            {
+                MessageBox.Show("Please load a mesh");
+                return;
+            }
             MarkedPoints.Clear();
             MarkedLines.Clear();
             form_Id = new Form_Id(currentGeometryObject.Triangles.Count, Form_IdType.FACE_NORMAL, this);
@@ -485,5 +529,6 @@ namespace Han_Obj_Viewer
 
             displayMode = DisplayMode.FACECOLORMAP;
         }
+
     }
 }
