@@ -331,6 +331,8 @@ namespace Han_Obj_Viewer
             {
                 return;
             }
+            MarkedPoints.Clear();
+            MarkedLines.Clear();
             StreamReader reader = new StreamReader(path);
             colorMap = new ColorMap(currentGeometryObject.Triangles);
 
@@ -366,6 +368,8 @@ namespace Han_Obj_Viewer
             {
                 return;
             }
+            MarkedPoints.Clear();
+            MarkedLines.Clear();
 
             StreamReader reader = new StreamReader(path);
             colorMap = new ColorMap(currentGeometryObject.Points);
@@ -399,9 +403,10 @@ namespace Han_Obj_Viewer
             {
                 return;
             }
+            MarkedPoints.Clear();
+            MarkedLines.Clear();
             StreamReader reader = new StreamReader(path);
             colorMap = new ColorMap(currentGeometryObject.Triangles);
-            MarkedPoints.Clear();
             MarkedPoints.Add(-1);
             for (int i = 0; i < colorMap.Count; i++)
             {
@@ -446,6 +451,7 @@ namespace Han_Obj_Viewer
             MarkedPoints.Clear();
             MarkedLines.Clear();
             form_Id = new Form_Id(currentGeometryObject.Points.Count, Form_IdType.POINT_NEIGHBOR, this);
+            form_Id.Text = "点Id";
             form_Id.Show();
         }
 
@@ -459,6 +465,7 @@ namespace Han_Obj_Viewer
             MarkedPoints.Clear();
             MarkedLines.Clear();
             form_Id = new Form_Id(currentGeometryObject.Triangles.Count, Form_IdType.FACE_NEIGHBOR, this);
+            form_Id.Text = "面Id";
             form_Id.Show();
         }
 
@@ -472,6 +479,7 @@ namespace Han_Obj_Viewer
             MarkedPoints.Clear();
             MarkedLines.Clear();
             form_Id = new Form_Id(currentGeometryObject.Triangles.Count, Form_IdType.FACE_NORMAL, this);
+            form_Id.Text = "面Id";
             form_Id.Show();
         }
 

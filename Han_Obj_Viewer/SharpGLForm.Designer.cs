@@ -33,13 +33,13 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadLabelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadPointLabelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadPointLabelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pointNeighborToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.faceNeighborToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.faceNormalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadPointLabelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -99,6 +99,13 @@
             this.loadLabelToolStripMenuItem.Text = "Load Face Label";
             this.loadLabelToolStripMenuItem.Click += new System.EventHandler(this.loadFaceLabelToolStripMenuItem_Click);
             // 
+            // loadPointLabelToolStripMenuItem1
+            // 
+            this.loadPointLabelToolStripMenuItem1.Name = "loadPointLabelToolStripMenuItem1";
+            this.loadPointLabelToolStripMenuItem1.Size = new System.Drawing.Size(271, 24);
+            this.loadPointLabelToolStripMenuItem1.Text = "Load Point Label";
+            this.loadPointLabelToolStripMenuItem1.Click += new System.EventHandler(this.loadPointLabelToolStripMenuItem_Click);
+            // 
             // loadPointLabelToolStripMenuItem
             // 
             this.loadPointLabelToolStripMenuItem.Name = "loadPointLabelToolStripMenuItem";
@@ -145,13 +152,6 @@
             this.faceNormalToolStripMenuItem.Text = "Face Normal";
             this.faceNormalToolStripMenuItem.Click += new System.EventHandler(this.faceNormalToolStripMenuItem_Click);
             // 
-            // loadPointLabelToolStripMenuItem1
-            // 
-            this.loadPointLabelToolStripMenuItem1.Name = "loadPointLabelToolStripMenuItem1";
-            this.loadPointLabelToolStripMenuItem1.Size = new System.Drawing.Size(271, 24);
-            this.loadPointLabelToolStripMenuItem1.Text = "Load Point Label";
-            this.loadPointLabelToolStripMenuItem1.Click += new System.EventHandler(this.loadPointLabelToolStripMenuItem_Click);
-            // 
             // SharpGLForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -162,7 +162,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "SharpGLForm";
-            this.Text = "Viewer";
+            this.Text = "Han Obj Viewer";
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
