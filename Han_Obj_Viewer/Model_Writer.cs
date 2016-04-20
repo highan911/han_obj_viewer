@@ -6,7 +6,17 @@ using System.IO;
 
 namespace Han_Obj_Viewer
 {
-    
+    public static class DecimalStrFromat
+    {
+        public static double Eps = 0.00001;
+        public static string ToDecimalStr(this double val)
+        {
+            if ((val > 0 && val < Eps) || (val < 0 && val > -Eps)) return "0";
+            string str = String.Format("{0:#.#####}", val);
+            return str;
+        }
+
+    }
 
     public class Model_Writer
     {
@@ -31,7 +41,7 @@ namespace Han_Obj_Viewer
             StreamWriter writer = new StreamWriter(Path);
             for (int i = 0; i < dataMat.Columns; i++)
             {
-                writer.WriteLine(String.Format("v {0} {1} {2}", dataMat[0, i], dataMat[1, i], dataMat[2, i]));
+                writer.WriteLine(String.Format("v {0} {1} {2}", dataMat[0, i].ToDecimalStr(), dataMat[1, i].ToDecimalStr(), dataMat[2, i].ToDecimalStr()));
             }
             for (int i = 0; i < GeometryObject.Triangles.Count; i++)
             {
@@ -62,7 +72,7 @@ namespace Han_Obj_Viewer
 
             for (int i = 0; i < dataMat.Columns; i++)
             {
-                writer.WriteLine(String.Format("{0} {1} {2}", dataMat[0, i], dataMat[1, i], dataMat[2, i]));
+                writer.WriteLine(String.Format("{0} {1} {2}", dataMat[0, i].ToDecimalStr(), dataMat[1, i].ToDecimalStr(), dataMat[2, i].ToDecimalStr()));
             }
             for (int i = 0; i < GeometryObject.Triangles.Count; i++)
             {

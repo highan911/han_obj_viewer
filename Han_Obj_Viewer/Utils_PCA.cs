@@ -26,8 +26,8 @@ namespace Han_Obj_Viewer
             Matrix meanMat = getMeanMat(dataMat);
 
             Origin[0] = meanMat[0, 0];
-            Origin[1] = meanMat[0, 1];
-            Origin[2] = meanMat[0, 2];
+            Origin[1] = meanMat[1, 0];
+            Origin[2] = meanMat[2, 0];
 
             dataMat = dataMat - meanMat;
             Matrix covar = dataMat * dataMat.Transpose();
@@ -59,9 +59,21 @@ namespace Han_Obj_Viewer
             BasisZ[1] = mtxEigenVector[1, index];
             BasisZ[2] = mtxEigenVector[2, index];
 
-            Scale = Math.Sqrt(sortedEigenValue[0] * sortedEigenValue[0] + sortedEigenValue[1] * sortedEigenValue[1] + sortedEigenValue[2] * sortedEigenValue[2]);
+            //Scale = Math.Sqrt(sortedEigenValue[0] * sortedEigenValue[0] + sortedEigenValue[1] * sortedEigenValue[1] + sortedEigenValue[2] * sortedEigenValue[2]);
+
+            double pmin, pmax;
+            pmin = BasisX[0] * dataMat[0, 0] + BasisX[1] * dataMat[1, 0] + BasisX[2] * dataMat[2, 0];
+            pmax = pmin;
+            for (int i = 1; i < inputMat.Columns; i++)
+            {
+                double pdata = BasisX[0] * dataMat[0, i] + BasisX[1] * dataMat[1, i] + BasisX[2] * dataMat[2, i];
+                if (pdata > pmax) pmax = pdata;
+                if (pdata < pmin) pmin = pdata;
+            }
+            Scale = pmax - pmin;
 
             PCATrans = new Transform(BasisX, BasisY, BasisZ, Origin, Scale);
+
             return true;
         }
 
