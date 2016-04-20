@@ -583,9 +583,10 @@ namespace Han_Obj_Viewer
             displayMode = DisplayMode.FACECOLORMAP;
         }
 
-        private void testToolStripMenuItem_Click(object sender, EventArgs e)
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Form_ICPMeshSelection form_Selection = new Form_ICPMeshSelection(geometryRoot);
+            form_Selection.DisableSVD();
             if (form_Selection.ShowDialog() != DialogResult.OK) return;
             TWO_MESHS_sourceObj = geometryRoot[form_Selection.source];
             TWO_MESHS_targetObj = geometryRoot[form_Selection.target];
@@ -604,13 +605,17 @@ namespace Han_Obj_Viewer
             TWO_MESHS_sourceObj = geometryRoot[form_Selection.source];
             TWO_MESHS_targetObj = geometryRoot[form_Selection.target];
 
+            int SVDLoops = form_Selection.SVDLoops;
+            int NSamples = 1000;
+
+
             TWO_MESHS_sourceObj.Transform = new Transform();
             TWO_MESHS_targetObj.Transform = new Transform();
 
             double[] EigenValue_source, EigenValue_target;
             Transform PCATrans_source, PCATrans_target;
 
-            int NSamples = 1000;
+
 
             Matrix inputMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NSamples);
             Matrix inputMat_target = TWO_MESHS_targetObj.ToSampledDataMat(NSamples);
@@ -618,28 +623,51 @@ namespace Han_Obj_Viewer
             Utils_PCA.DoPCA(inputMat_source, out EigenValue_source, out PCATrans_source);
             Utils_PCA.DoPCA(inputMat_target, out EigenValue_target, out PCATrans_target);
 
-            Matrix PCATransMat_source = PCATrans_source.GetMatrix();
-            PCATransMat_source.InvertGaussJordan();
-            PCATransMat_source = PCATrans_target.GetMatrix() * PCATransMat_source;
+            Matrix PCA_InvTransMat_source = PCATrans_source.GetMatrix();
+            PCA_InvTransMat_source.InvertGaussJordan();
 
-            TWO_MESHS_sourceObj.Transform = new Transform(PCATransMat_source);
+            Matrix PCA_TransMat_target = PCATrans_target.GetMatrix();
+            Matrix PCA_InvTransMat_target = new Matrix(PCA_TransMat_target);
+            PCA_InvTransMat_target.InvertGaussJordan();
 
-            inputMat_source = PCATransMat_source * inputMat_source;
+            //TWO_MESHS_sourceObj.Transform = new Transform(PCA_TransMat);
+
+            inputMat_source = PCA_InvTransMat_source * inputMat_source;
+            inputMat_target = PCA_InvTransMat_target * inputMat_target;
+
+            Matrix SVD_TransMat = new Matrix(4, 4);
+            SVD_TransMat.MakeUnitMatrix(4);
+
+            /// SVD Start
+
+            CellIndex cellIndex = null;
+
+            
+            for (int i = 0; i < SVDLoops; i++)
+            {
+                Matrix temp_SVD_TransMat = Utils_SVD.SVDGetTransMat(inputMat_source, inputMat_target, cellIndex);
+                SVD_TransMat = temp_SVD_TransMat * SVD_TransMat;
+                inputMat_source = temp_SVD_TransMat * inputMat_source;
+            }
+
+            TWO_MESHS_sourceObj.Transform = new Transform(PCA_TransMat_target * SVD_TransMat * PCA_InvTransMat_source);
+
 
             displayMode = DisplayMode.TWO_MESHS;
         }
 
-        private void setTransformToolStripMenuItem_Click(object sender, EventArgs e)
+        private void doTransformToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (currentGeometryObject == null) return;
             Form_SetTransform form_SetTransform = new Form_SetTransform();
             if (form_SetTransform.ShowDialog() != DialogResult.OK) return;
             Matrix newMat = form_SetTransform.Transform.GetMatrix() * currentGeometryObject.Transform.GetMatrix();
             currentGeometryObject.Transform = new Transform(newMat);
-            
+
             displayMode = DisplayMode.DEFAULT;
         }
 
-        private void saveTransformToolStripMenuItem_Click(object sender, EventArgs e)
+        private void saveTransformedMeshToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Model_Writer writer;
 
@@ -663,7 +691,6 @@ namespace Han_Obj_Viewer
             {
                 MessageBox.Show("Error writing: " + path);
             }
-
         }
 
     }

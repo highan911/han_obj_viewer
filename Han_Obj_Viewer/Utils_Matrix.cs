@@ -2864,7 +2864,7 @@ namespace Han_Obj_Viewer
 
             bool nextLoop = false;
 
-            int loop = 0;
+            //int loop = 0;
 
             while (true)
             {

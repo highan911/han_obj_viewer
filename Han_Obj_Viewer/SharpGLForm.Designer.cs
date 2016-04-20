@@ -35,16 +35,17 @@
             this.loadLabelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadPointLabelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadPointLabelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.doTransformToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveTransformedMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pointNeighborToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.faceNeighborToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.faceNormalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.operationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.iCPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.setTransformToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveTransformToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -86,7 +87,10 @@
             this.loadToolStripMenuItem,
             this.loadLabelToolStripMenuItem,
             this.loadPointLabelToolStripMenuItem1,
-            this.loadPointLabelToolStripMenuItem});
+            this.loadPointLabelToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.doTransformToolStripMenuItem,
+            this.saveTransformedMeshToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
             this.fileToolStripMenuItem.Text = "File";
@@ -118,6 +122,25 @@
             this.loadPointLabelToolStripMenuItem.Size = new System.Drawing.Size(271, 24);
             this.loadPointLabelToolStripMenuItem.Text = "Load Point Selection Label";
             this.loadPointLabelToolStripMenuItem.Click += new System.EventHandler(this.loadPointSelectionLabelToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(268, 6);
+            // 
+            // doTransformToolStripMenuItem
+            // 
+            this.doTransformToolStripMenuItem.Name = "doTransformToolStripMenuItem";
+            this.doTransformToolStripMenuItem.Size = new System.Drawing.Size(271, 24);
+            this.doTransformToolStripMenuItem.Text = "Do Transform";
+            this.doTransformToolStripMenuItem.Click += new System.EventHandler(this.doTransformToolStripMenuItem_Click);
+            // 
+            // saveTransformedMeshToolStripMenuItem
+            // 
+            this.saveTransformedMeshToolStripMenuItem.Name = "saveTransformedMeshToolStripMenuItem";
+            this.saveTransformedMeshToolStripMenuItem.Size = new System.Drawing.Size(271, 24);
+            this.saveTransformedMeshToolStripMenuItem.Text = "Save Transformed Mesh";
+            this.saveTransformedMeshToolStripMenuItem.Click += new System.EventHandler(this.saveTransformedMeshToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -161,41 +184,25 @@
             // operationToolStripMenuItem
             // 
             this.operationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.testToolStripMenuItem,
-            this.setTransformToolStripMenuItem,
-            this.saveTransformToolStripMenuItem,
+            this.resetToolStripMenuItem,
             this.iCPToolStripMenuItem});
             this.operationToolStripMenuItem.Name = "operationToolStripMenuItem";
-            this.operationToolStripMenuItem.Size = new System.Drawing.Size(95, 24);
-            this.operationToolStripMenuItem.Text = "Operation";
+            this.operationToolStripMenuItem.Size = new System.Drawing.Size(97, 24);
+            this.operationToolStripMenuItem.Text = "Alignment";
             // 
-            // testToolStripMenuItem
+            // resetToolStripMenuItem
             // 
-            this.testToolStripMenuItem.Name = "testToolStripMenuItem";
-            this.testToolStripMenuItem.Size = new System.Drawing.Size(180, 24);
-            this.testToolStripMenuItem.Text = "Test";
-            this.testToolStripMenuItem.Click += new System.EventHandler(this.testToolStripMenuItem_Click);
+            this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.resetToolStripMenuItem.Text = "Reset";
+            this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
             // 
             // iCPToolStripMenuItem
             // 
             this.iCPToolStripMenuItem.Name = "iCPToolStripMenuItem";
-            this.iCPToolStripMenuItem.Size = new System.Drawing.Size(180, 24);
-            this.iCPToolStripMenuItem.Text = "ICP";
+            this.iCPToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.iCPToolStripMenuItem.Text = "PCA / ICP";
             this.iCPToolStripMenuItem.Click += new System.EventHandler(this.iCPToolStripMenuItem_Click);
-            // 
-            // setTransformToolStripMenuItem
-            // 
-            this.setTransformToolStripMenuItem.Name = "setTransformToolStripMenuItem";
-            this.setTransformToolStripMenuItem.Size = new System.Drawing.Size(180, 24);
-            this.setTransformToolStripMenuItem.Text = "Set Transform";
-            this.setTransformToolStripMenuItem.Click += new System.EventHandler(this.setTransformToolStripMenuItem_Click);
-            // 
-            // saveTransformToolStripMenuItem
-            // 
-            this.saveTransformToolStripMenuItem.Name = "saveTransformToolStripMenuItem";
-            this.saveTransformToolStripMenuItem.Size = new System.Drawing.Size(190, 24);
-            this.saveTransformToolStripMenuItem.Text = "Save Transform";
-            this.saveTransformToolStripMenuItem.Click += new System.EventHandler(this.saveTransformToolStripMenuItem_Click);
             // 
             // SharpGLForm
             // 
@@ -231,10 +238,11 @@
         private System.Windows.Forms.ToolStripMenuItem faceNormalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadPointLabelToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem operationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem iCPToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem setTransformToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveTransformToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem doTransformToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveTransformedMeshToolStripMenuItem;
     }
 }
 

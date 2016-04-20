@@ -33,6 +33,9 @@
             this.buttonOK = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.numericSVD = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.numericSVD)).BeginInit();
             this.SuspendLayout();
             // 
             // comboBoxTarget
@@ -55,7 +58,7 @@
             // 
             // buttonOK
             // 
-            this.buttonOK.Location = new System.Drawing.Point(195, 97);
+            this.buttonOK.Location = new System.Drawing.Point(195, 143);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 2;
@@ -81,11 +84,29 @@
             this.label2.TabIndex = 4;
             this.label2.Text = "Target";
             // 
+            // numericSVD
+            // 
+            this.numericSVD.Location = new System.Drawing.Point(104, 100);
+            this.numericSVD.Name = "numericSVD";
+            this.numericSVD.Size = new System.Drawing.Size(166, 25);
+            this.numericSVD.TabIndex = 5;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 102);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(79, 15);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "SVD Loops";
+            // 
             // Form_ICPMeshSelection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(282, 137);
+            this.ClientSize = new System.Drawing.Size(282, 180);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.numericSVD);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.buttonOK);
@@ -96,6 +117,7 @@
             this.MinimizeBox = false;
             this.Name = "Form_ICPMeshSelection";
             this.Text = "Mesh Selection";
+            ((System.ComponentModel.ISupportInitialize)(this.numericSVD)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -108,5 +130,7 @@
         private System.Windows.Forms.Button buttonOK;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.NumericUpDown numericSVD;
+        private System.Windows.Forms.Label label3;
     }
 }

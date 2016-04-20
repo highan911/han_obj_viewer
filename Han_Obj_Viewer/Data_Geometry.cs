@@ -67,6 +67,11 @@ namespace Han_Obj_Viewer
             return Math.Sqrt(X * X + Y * Y + Z * Z);
         }
 
+        public static double Distance(XYZ p1, XYZ p2)
+        {
+            return XYZ.Minus(p1, p2).GetLength();
+        }
+
         public static XYZ Add(XYZ p1, XYZ p2)
         {
             double x = p1.X + p2.X;

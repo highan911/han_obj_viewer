@@ -157,10 +157,10 @@
             0,
             0});
             this.numericS.Minimum = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
-            65536});
+            -2147483648});
             this.numericS.Name = "numericS";
             this.numericS.Size = new System.Drawing.Size(120, 25);
             this.numericS.TabIndex = 7;
@@ -179,6 +179,11 @@
             0,
             65536});
             this.numericX.Location = new System.Drawing.Point(150, 131);
+            this.numericX.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.numericX.Name = "numericX";
             this.numericX.Size = new System.Drawing.Size(120, 25);
             this.numericX.TabIndex = 8;
@@ -187,6 +192,11 @@
             // 
             this.numericY.DecimalPlaces = 1;
             this.numericY.Location = new System.Drawing.Point(150, 162);
+            this.numericY.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.numericY.Name = "numericY";
             this.numericY.Size = new System.Drawing.Size(120, 25);
             this.numericY.TabIndex = 9;
@@ -195,6 +205,11 @@
             // 
             this.numericZ.DecimalPlaces = 1;
             this.numericZ.Location = new System.Drawing.Point(150, 193);
+            this.numericZ.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.numericZ.Name = "numericZ";
             this.numericZ.Size = new System.Drawing.Size(120, 25);
             this.numericZ.TabIndex = 10;
@@ -260,7 +275,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Form_SetTransform";
-            this.Text = "Set Transform";
+            this.Text = "Do Transform";
             ((System.ComponentModel.ISupportInitialize)(this.numericRx)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericRy)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericRz)).EndInit();

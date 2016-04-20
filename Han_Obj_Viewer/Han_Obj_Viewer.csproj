@@ -80,6 +80,7 @@
     <Compile Include="Model_Loader.cs" />
     <Compile Include="Model_Writer.cs" />
     <Compile Include="Utils_PCA.cs" />
+    <Compile Include="Utils_CellIndex.cs" />
     <Compile Include="Utils_SVD.cs" />
     <Compile Include="Utils_Transform.cs" />
     <Compile Include="SharpGLForm.cs">
