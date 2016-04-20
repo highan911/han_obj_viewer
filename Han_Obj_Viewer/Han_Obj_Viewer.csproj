@@ -59,13 +59,29 @@
     <Compile Include="Data_ColorMap.cs" />
     <Compile Include="Data_Geometry.cs" />
     <Compile Include="Data_GeometryRoot.cs" />
+    <Compile Include="Form_ICPMeshSelection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_ICPMeshSelection.Designer.cs">
+      <DependentUpon>Form_ICPMeshSelection.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form_Id.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form_Id.Designer.cs">
       <DependentUpon>Form_Id.cs</DependentUpon>
     </Compile>
-    <Compile Include="Obj_Loader.cs" />
+    <Compile Include="Form_SetTransform.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_SetTransform.Designer.cs">
+      <DependentUpon>Form_SetTransform.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Model_Loader.cs" />
+    <Compile Include="Model_Writer.cs" />
+    <Compile Include="Utils_PCA.cs" />
+    <Compile Include="Utils_SVD.cs" />
+    <Compile Include="Utils_Transform.cs" />
     <Compile Include="SharpGLForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,8 +90,15 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils_Matrix.cs" />
+    <EmbeddedResource Include="Form_ICPMeshSelection.resx">
+      <DependentUpon>Form_ICPMeshSelection.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form_Id.resx">
       <DependentUpon>Form_Id.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_SetTransform.resx">
+      <DependentUpon>Form_SetTransform.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

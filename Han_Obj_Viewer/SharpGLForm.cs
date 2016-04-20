@@ -15,7 +15,8 @@ namespace Han_Obj_Viewer
     {
         DEFAULT = 0,
         POINTCOLORMAP = 1,
-        FACECOLORMAP = 2
+        FACECOLORMAP = 2,
+        TWO_MESHS = 3
     }
 
 
@@ -25,8 +26,6 @@ namespace Han_Obj_Viewer
     /// </summary>
     public partial class SharpGLForm : Form
     {
-        Model_Loader loader;
-
         GeometryRoot geometryRoot = new GeometryRoot();
 
         double currentScale = 5.0;
@@ -36,12 +35,21 @@ namespace Han_Obj_Viewer
         double cameraDist = 5;
         float angleV = 45, angleH = 45;
 
-        ColorMap colorMap;
+        /* Global Settings */
+        public DisplayMode displayMode = DisplayMode.DEFAULT;
         GeometryObject currentGeometryObject;
+
+        // Colors and Marks
+        ColorMap colorMap;
         List<int> MarkedPoints = new List<int>();
         List<Line> MarkedLines = new List<Line>(); 
+        
+        // TWO_MESHS
+        GeometryObject TWO_MESHS_sourceObj;
+        GeometryObject TWO_MESHS_targetObj;
 
-        public DisplayMode displayMode = DisplayMode.DEFAULT;
+        /* End Global Settings */
+
         Form_Id form_Id;
 
 
@@ -57,46 +65,51 @@ namespace Han_Obj_Viewer
 
         public bool Load_Mesh()
         {
-            string path = null;
+            Model_Loader loader;
+
+            string[] paths = null;
             string dir = System.Environment.CurrentDirectory;
             //string dir = @"D:\workspace_cs\Han_Obj_Viewer\refer\hw1_realse\";
-            if (!MeshFileSelect(out path, dir))
+            if (!MeshFileSelect(out paths, dir))
             {
                 return false;
             }
             //loader = new Off_Loader(@"D:\workspace_cs\Han_Obj_Viewer\refer\hw1_realse\281.off");
-            string extension = Path.GetExtension(path);
-            string filename = Path.GetFileName(path);
-            if (extension == ".obj")
+            foreach (string path in paths)
             {
-                loader = new Obj_Loader(path);
-            }
-            else if (extension == ".off")
-            {
-                loader = new Off_Loader(path);
-            }
-            else
-            {
-                return false;
-            }
+                string extension = Path.GetExtension(path);
+                string filename = Path.GetFileName(path);
+                if (extension == ".obj")
+                {
+                    loader = new Obj_Loader(path);
+                }
+                else if (extension == ".off")
+                {
+                    loader = new Off_Loader(path);
+                }
+                else
+                {
+                    MessageBox.Show("Error loading: " + path);
+                    continue;
+                }
 
-            displayMode = DisplayMode.DEFAULT;
+                displayMode = DisplayMode.DEFAULT;
 
-            while (geometryRoot.ContainsKey(filename)) filename += "_";
-            geometryRoot.Add(filename, loader.GeometryObject);
-            currentGeometryObject = geometryRoot[filename];
-            ToolStripItem newitem = currentMeshToolStripMenuItem.DropDownItems.Add(filename);
+                while (geometryRoot.ContainsKey(filename)) filename += "_";
+                geometryRoot.Add(filename, loader.GeometryObject);
+                currentGeometryObject = geometryRoot[filename];
+                ToolStripItem newitem = currentMeshToolStripMenuItem.DropDownItems.Add(filename);
 
-            foreach (ToolStripItem item in currentMeshToolStripMenuItem.DropDownItems)
-            {
-                item.BackColor = SystemColors.Control;
+                foreach (ToolStripItem item in currentMeshToolStripMenuItem.DropDownItems)
+                {
+                    item.BackColor = SystemColors.Control;
+                }
+                newitem.BackColor = SystemColors.ControlDarkDark;
+
+                MarkedLines.Clear();
+                MarkedPoints.Clear();
             }
-            newitem.BackColor = SystemColors.ControlDarkDark;
-
-            MarkedLines.Clear();
-            MarkedPoints.Clear();
             return true;
-
         }
 
         /// <summary>
@@ -141,6 +154,23 @@ namespace Han_Obj_Viewer
                             currentGeometryObject.ShowFaceColorMap(gl, colorMap);
                             currentGeometryObject.ShowEdge(gl);
                             currentGeometryObject.DrawMarkedPoints(gl, MarkedPoints);
+                        }
+                        catch (Exception ex)
+                        {
+                            displayMode = DisplayMode.DEFAULT;
+                            MessageBox.Show(ex.Message + ex.StackTrace);
+                        }
+                        break;
+                    case DisplayMode.TWO_MESHS:
+                        try
+                        {
+                            float[] color1 = { 0.5f, 0.5f, 0.0f };
+                            float[] color2 = { 0.0f, 0.5f, 0.5f };
+
+                            TWO_MESHS_sourceObj.Show(gl, color1);
+                            TWO_MESHS_sourceObj.ShowEdge(gl);
+                            TWO_MESHS_targetObj.Show(gl, color2);
+                            TWO_MESHS_targetObj.ShowEdge(gl);
                         }
                         catch (Exception ex)
                         {
@@ -267,16 +297,31 @@ namespace Han_Obj_Viewer
         }
 
 
-        static bool MeshFileSelect(out string filename, string folder = null)
+        static bool MeshFileSelect(out string[] filenames, string folder = null)
         {
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Title = "选择Mesh文件";
             dlg.CheckFileExists = true;
             dlg.CheckPathExists = true;
+            dlg.Multiselect = true;
             //dlg.RestoreDirectory = true;
             if(folder != null)
                 dlg.InitialDirectory = folder;
             dlg.Filter = "Supported Mesh Files (*.obj, *.off)|*.obj;*.off";
+            bool rc = (DialogResult.OK == dlg.ShowDialog());
+            filenames = dlg.FileNames;
+            return rc;
+        }
+
+        static bool MeshFileSave(out string filename, string folder = null)
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Title = "保存Mesh文件";
+            dlg.CheckPathExists = true;
+            //dlg.RestoreDirectory = true;
+            if (folder != null)
+                dlg.InitialDirectory = folder;
+            dlg.Filter = "Obj Files (*.obj)|*.obj|Off Files (*.off)|*.off";
             bool rc = (DialogResult.OK == dlg.ShowDialog());
             filename = dlg.FileName;
             return rc;
@@ -536,6 +581,89 @@ namespace Han_Obj_Viewer
             MarkedLines.Add(line);
 
             displayMode = DisplayMode.FACECOLORMAP;
+        }
+
+        private void testToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form_ICPMeshSelection form_Selection = new Form_ICPMeshSelection(geometryRoot);
+            if (form_Selection.ShowDialog() != DialogResult.OK) return;
+            TWO_MESHS_sourceObj = geometryRoot[form_Selection.source];
+            TWO_MESHS_targetObj = geometryRoot[form_Selection.target];
+
+            TWO_MESHS_sourceObj.Transform = new Transform();
+            TWO_MESHS_targetObj.Transform = new Transform();
+
+            displayMode = DisplayMode.TWO_MESHS;
+        }
+
+        private void iCPToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            Form_ICPMeshSelection form_Selection = new Form_ICPMeshSelection(geometryRoot);
+            if (form_Selection.ShowDialog() != DialogResult.OK) return;
+            TWO_MESHS_sourceObj = geometryRoot[form_Selection.source];
+            TWO_MESHS_targetObj = geometryRoot[form_Selection.target];
+
+            TWO_MESHS_sourceObj.Transform = new Transform();
+            TWO_MESHS_targetObj.Transform = new Transform();
+
+            double[] EigenValue_source, EigenValue_target;
+            Transform PCATrans_source, PCATrans_target;
+
+            int NSamples = 1000;
+
+            Matrix inputMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NSamples);
+            Matrix inputMat_target = TWO_MESHS_targetObj.ToSampledDataMat(NSamples);
+
+            Utils_PCA.DoPCA(inputMat_source, out EigenValue_source, out PCATrans_source);
+            Utils_PCA.DoPCA(inputMat_target, out EigenValue_target, out PCATrans_target);
+
+            Matrix PCATransMat_source = PCATrans_source.GetMatrix();
+            PCATransMat_source.InvertGaussJordan();
+            PCATransMat_source = PCATrans_target.GetMatrix() * PCATransMat_source;
+
+            TWO_MESHS_sourceObj.Transform = new Transform(PCATransMat_source);
+
+            inputMat_source = PCATransMat_source * inputMat_source;
+
+            displayMode = DisplayMode.TWO_MESHS;
+        }
+
+        private void setTransformToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form_SetTransform form_SetTransform = new Form_SetTransform();
+            if (form_SetTransform.ShowDialog() != DialogResult.OK) return;
+            Matrix newMat = form_SetTransform.Transform.GetMatrix() * currentGeometryObject.Transform.GetMatrix();
+            currentGeometryObject.Transform = new Transform(newMat);
+            
+            displayMode = DisplayMode.DEFAULT;
+        }
+
+        private void saveTransformToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Model_Writer writer;
+
+            if (currentGeometryObject == null) return;
+            string path;
+            if (!MeshFileSave(out path))
+            {
+                return;
+            }
+
+            string extension = Path.GetExtension(path);
+            if (extension == ".obj")
+            {
+                writer = new Obj_Writer(path, currentGeometryObject);
+            }
+            else if (extension == ".off")
+            {
+                writer = new Off_Writer(path, currentGeometryObject);
+            }
+            else
+            {
+                MessageBox.Show("Error writing: " + path);
+            }
+
         }
 
     }

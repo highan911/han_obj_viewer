@@ -113,9 +113,18 @@ namespace Han_Obj_Viewer
             array[2] = Z;
             return array;
         }
+
+        public XYZ Transform(Transform Trans)
+        {
+            double x, y, z;
+            Trans.ApplyTrans(X, Y, Z, out x, out y, out z);
+            XYZ outpoint = new XYZ(x, y, z);
+            return outpoint;
+        }
     }
 
     public class Line : List<XYZ> { }
+
     public class PointDraw3D
     {
         public XYZ C;
