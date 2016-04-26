@@ -139,10 +139,10 @@ namespace Han_Obj_Viewer
         }
 
 
-        public Matrix DoPointMatch(Matrix mat_source, Matrix mat_target)
+        public Matrix DoPointMatch(Matrix mat_source)
         {
 
-            Matrix matQ = new Matrix(mat_target.Rows, mat_target.Columns);
+            Matrix matQ = new Matrix(mat_source.Rows, mat_source.Columns);
 
             for (int i = 0; i < mat_source.Columns; i++)
             {

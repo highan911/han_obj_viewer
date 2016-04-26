@@ -79,6 +79,7 @@
     </Compile>
     <Compile Include="Model_Loader.cs" />
     <Compile Include="Model_Writer.cs" />
+    <Compile Include="Utils_CheckErr.cs" />
     <Compile Include="Utils_PCA.cs" />
     <Compile Include="Utils_CellIndex.cs" />
     <Compile Include="Utils_SVD.cs" />

@@ -2864,7 +2864,7 @@ namespace Han_Obj_Viewer
 
             bool nextLoop = false;
 
-            //int loop = 0;
+            int loop = 50;
 
             while (true)
             {
@@ -2954,8 +2954,22 @@ namespace Han_Obj_Viewer
                         dblEigenValue[i] = mtxIn.GetElement(i, i);
                     return true;
                 }
+                else
+                {
+                    loop--;
+                    if (loop < 0)
+                    {
+                        for (i = 0; i < mtxIn.numColumns; ++i)
+                            dblEigenValue[i] = mtxIn.GetElement(i, i);
+                        return false;
+                    }
+
+                }
 
                 ff = ff / (1.0 * mtxIn.numColumns);
+
+                
+
             }
         }
     }

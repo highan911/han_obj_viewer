@@ -5,10 +5,9 @@ using System.Text;
 
 namespace Han_Obj_Viewer
 {
-    public class Utils_SVD
+    class Utils_CheckErr
     {
-
-        public static Matrix SVDGetTransMat(Matrix mat_source, Matrix mat_target, ref CellIndex cellIndex)
+        public static double CheckErr(Matrix mat_source, Matrix mat_target, ref CellIndex cellIndex)
         {
             //4 * NSamples
 
@@ -27,24 +26,19 @@ namespace Han_Obj_Viewer
 
             Matrix matQ = cellIndex.DoPointMatch(matP);
 
-            Matrix matM = matP * matQ.Transpose();
+            Matrix matErr = matQ - matP;
 
-            Matrix matU = new Matrix(3, 3);
-            Matrix matV = new Matrix(3, 3);
+            double Err = 0;
 
-            matM.SplitUV(matU, matV, 0.0001);
-
-            Matrix matUV = matV * matU.Transpose();
-            Matrix matT = new Matrix(4, 4);
-            matT.MakeUnitMatrix(4);
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < matErr.Columns; i++)
             {
-                for (int j = 0; j < 3; j++)
-                {
-                    matT[i, j] = matUV[i, j];
-                }
+                Err += Math.Sqrt(matErr[0, i] * matErr[0, i] + matErr[1, i] * matErr[1, i] + matErr[2, i] * matErr[2, i]);
             }
-            return matT;
+
+            Err = Err / matErr.Columns;
+
+            return Err;
+
         }
 
     }

@@ -620,6 +620,8 @@ namespace Han_Obj_Viewer
             Matrix inputMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NSamples);
             Matrix inputMat_target = TWO_MESHS_targetObj.ToSampledDataMat(NSamples);
 
+            
+
             Utils_PCA.DoPCA(inputMat_source, out EigenValue_source, out PCATrans_source);
             Utils_PCA.DoPCA(inputMat_target, out EigenValue_target, out PCATrans_target);
 
@@ -635,6 +637,12 @@ namespace Han_Obj_Viewer
             inputMat_source = PCA_InvTransMat_source * inputMat_source;
             inputMat_target = PCA_InvTransMat_target * inputMat_target;
 
+            List<double> errList = new List<double>();
+
+            CellIndex errCellIndex = null;
+            errList.Add(Utils_CheckErr.CheckErr(inputMat_source, inputMat_target, ref errCellIndex));
+
+
             Matrix SVD_TransMat = new Matrix(4, 4);
             SVD_TransMat.MakeUnitMatrix(4);
 
@@ -645,12 +653,22 @@ namespace Han_Obj_Viewer
             
             for (int i = 0; i < SVDLoops; i++)
             {
-                Matrix temp_SVD_TransMat = Utils_SVD.SVDGetTransMat(inputMat_source, inputMat_target, cellIndex);
+                Matrix temp_SVD_TransMat = Utils_SVD.SVDGetTransMat(inputMat_source, inputMat_target, ref cellIndex);
                 SVD_TransMat = temp_SVD_TransMat * SVD_TransMat;
                 inputMat_source = temp_SVD_TransMat * inputMat_source;
+                errList.Add(Utils_CheckErr.CheckErr(inputMat_source, inputMat_target, ref errCellIndex));
             }
 
             TWO_MESHS_sourceObj.Transform = new Transform(PCA_TransMat_target * SVD_TransMat * PCA_InvTransMat_source);
+
+            string msg = "Error: ";
+
+            foreach (double err in errList)
+            {
+                msg += err.ToString() + ", ";
+            }
+
+            MessageBox.Show(msg);
 
 
             displayMode = DisplayMode.TWO_MESHS;
