@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Han_Obj_Viewer
+namespace Han_Obj_Viewer.Backup
 {
     public class Matrix
     {
@@ -2868,6 +2868,15 @@ namespace Han_Obj_Viewer
 
             while (true)
             {
+                loop--;
+                if (loop < 0)
+                {
+                    for (i = 0; i < mtxIn.numColumns; ++i)
+                        dblEigenValue[i] = mtxIn.GetElement(i, i);
+                    return false;
+                }
+
+
                 for (i = 1; i <= mtxIn.numColumns - 1; i++)
                 {
                     for (j = 0; j <= i - 1; j++)
@@ -2953,17 +2962,6 @@ namespace Han_Obj_Viewer
                     for (i = 0; i < mtxIn.numColumns; ++i)
                         dblEigenValue[i] = mtxIn.GetElement(i, i);
                     return true;
-                }
-                else
-                {
-                    loop--;
-                    if (loop < 0)
-                    {
-                        for (i = 0; i < mtxIn.numColumns; ++i)
-                            dblEigenValue[i] = mtxIn.GetElement(i, i);
-                        return false;
-                    }
-
                 }
 
                 ff = ff / (1.0 * mtxIn.numColumns);

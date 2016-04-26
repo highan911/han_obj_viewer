@@ -14,7 +14,7 @@ namespace Han_Obj_Viewer
         GeometryRoot geometryRoot;
         public string source = null;
         public string target = null;
-        public int SVDLoops;
+        public int SVDLoops, NSamples;
         
         public Form_ICPMeshSelection(GeometryRoot geometryRoot)
         {
@@ -47,6 +47,7 @@ namespace Han_Obj_Viewer
             if (source != null && target != null)
             {
                 this.SVDLoops = (int)numericSVD.Value;
+                this.NSamples = (int)numericNSamples.Value;
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace Han_Obj_Viewer
 {
@@ -35,11 +36,11 @@ namespace Han_Obj_Viewer
         private void Write()
         {
             Transform Trans = GeometryObject.Transform;
-            Matrix dataMat = GeometryObject.ToDataMat();
+            DenseMatrix dataMat = GeometryObject.ToDataMat();
             dataMat = Trans.GetMatrix() * dataMat;
 
             StreamWriter writer = new StreamWriter(Path);
-            for (int i = 0; i < dataMat.Columns; i++)
+            for (int i = 0; i < dataMat.ColumnCount; i++)
             {
                 writer.WriteLine(String.Format("v {0} {1} {2}", dataMat[0, i].ToDecimalStr(), dataMat[1, i].ToDecimalStr(), dataMat[2, i].ToDecimalStr()));
             }
@@ -63,14 +64,14 @@ namespace Han_Obj_Viewer
         private void Write()
         {
             Transform Trans = GeometryObject.Transform;
-            Matrix dataMat = GeometryObject.ToDataMat();
+            DenseMatrix dataMat = GeometryObject.ToDataMat();
             dataMat = Trans.GetMatrix() * dataMat;
 
             StreamWriter writer = new StreamWriter(Path);
             writer.WriteLine("OFF");
             writer.WriteLine(String.Format("{0} {1} {2}", GeometryObject.Points.Count, GeometryObject.Triangles.Count, GeometryObject.Edges.Count));
 
-            for (int i = 0; i < dataMat.Columns; i++)
+            for (int i = 0; i < dataMat.ColumnCount; i++)
             {
                 writer.WriteLine(String.Format("{0} {1} {2}", dataMat[0, i].ToDecimalStr(), dataMat[1, i].ToDecimalStr(), dataMat[2, i].ToDecimalStr()));
             }

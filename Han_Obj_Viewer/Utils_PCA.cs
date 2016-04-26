@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MathNet.Numerics.LinearAlgebra.Double;
+using MathNet.Numerics.LinearAlgebra;
+using System.Numerics;
 
 namespace Han_Obj_Viewer
 {
     public class Utils_PCA
     {
-        public static bool DoPCA(Matrix inputMat, out double[] sortedEigenValue, out Transform PCATrans)
+        public static bool DoPCA(DenseMatrix inputMat, out double[] sortedEigenValues, out Transform PCATrans)
         {
             double[] Origin = new double[3];
             double[] BasisX = new double[3];
@@ -15,56 +18,59 @@ namespace Han_Obj_Viewer
             double[] BasisZ = new double[3];
             double Scale;
 
-            sortedEigenValue = new double[3];
+            
             PCATrans = new Transform();
 
-            double[] data = new double[3 * inputMat.Columns];
-            Array.Copy(inputMat.GetData(), data, 3 * inputMat.Columns);
+            DenseMatrix dataMat = inputMat.SubMatrix(0, 3, 0, inputMat.ColumnCount) as DenseMatrix;
 
-            Matrix dataMat = new Matrix(3, inputMat.Columns, data);
-
-            Matrix meanMat = getMeanMat(dataMat);
+            DenseMatrix meanMat = getMeanMat(dataMat);
 
             Origin[0] = meanMat[0, 0];
             Origin[1] = meanMat[1, 0];
             Origin[2] = meanMat[2, 0];
 
             dataMat = dataMat - meanMat;
-            Matrix covar = dataMat * dataMat.Transpose();
+            DenseMatrix covar = dataMat * dataMat.Transpose() as DenseMatrix;
 
-            double[] dblEigenValue = new double[3];
-            double eps=0.001;
-            Matrix mtxEigenVector = new Matrix(3, 3);
-            bool EvSuccess = covar.ComputeEvJacobi(dblEigenValue, mtxEigenVector, eps);
-            if (!EvSuccess) return false;
+            
+            //bool EvSuccess = covar.ComputeEvJacobi(dblEigenValue, mtxEigenVector, eps);
 
-            int index = getMaxEigenValueIndex(dblEigenValue);
-            sortedEigenValue[0] = dblEigenValue[index];
-            dblEigenValue[index] = 0;
-            BasisX[0] = mtxEigenVector[0, index];
-            BasisX[1] = mtxEigenVector[1, index];
-            BasisX[2] = mtxEigenVector[2, index];
+            MathNet.Numerics.LinearAlgebra.Factorization.Evd<double> evd = covar.Evd();
 
-            index = getMaxEigenValueIndex(dblEigenValue);
-            sortedEigenValue[1] = dblEigenValue[index];
-            dblEigenValue[index] = 0;
-            BasisY[0] = mtxEigenVector[0, index];
-            BasisY[1] = mtxEigenVector[1, index];
-            BasisY[2] = mtxEigenVector[2, index];
+            Vector<Complex> eigenValues = evd.EigenValues;
+            DenseMatrix eigenVectors = evd.EigenVectors as DenseMatrix;
 
-            index = getMaxEigenValueIndex(dblEigenValue);
-            sortedEigenValue[2] = dblEigenValue[index];
-            dblEigenValue[index] = 0;
-            BasisZ[0] = mtxEigenVector[0, index];
-            BasisZ[1] = mtxEigenVector[1, index];
-            BasisZ[2] = mtxEigenVector[2, index];
+            sortedEigenValues = new double[3];
+
+            //if (!EvSuccess) return false;
+
+            int index = getMaxEigenValueIndex(eigenValues);
+            sortedEigenValues[0] = eigenValues[index].Magnitude;
+            eigenValues[index] = 0;
+            BasisX[0] = eigenVectors[0, index];
+            BasisX[1] = eigenVectors[1, index];
+            BasisX[2] = eigenVectors[2, index];
+
+            index = getMaxEigenValueIndex(eigenValues);
+            sortedEigenValues[1] = eigenValues[index].Magnitude;
+            eigenValues[index] = 0;
+            BasisY[0] = eigenVectors[0, index];
+            BasisY[1] = eigenVectors[1, index];
+            BasisY[2] = eigenVectors[2, index];
+
+            index = getMaxEigenValueIndex(eigenValues);
+            sortedEigenValues[2] = eigenValues[index].Magnitude;
+            eigenValues[index] = 0;
+            BasisZ[0] = eigenVectors[0, index];
+            BasisZ[1] = eigenVectors[1, index];
+            BasisZ[2] = eigenVectors[2, index];
 
             //Scale = Math.Sqrt(sortedEigenValue[0] * sortedEigenValue[0] + sortedEigenValue[1] * sortedEigenValue[1] + sortedEigenValue[2] * sortedEigenValue[2]);
 
             double pmin, pmax;
             pmin = BasisX[0] * dataMat[0, 0] + BasisX[1] * dataMat[1, 0] + BasisX[2] * dataMat[2, 0];
             pmax = pmin;
-            for (int i = 1; i < inputMat.Columns; i++)
+            for (int i = 1; i < inputMat.ColumnCount; i++)
             {
                 double pdata = BasisX[0] * dataMat[0, i] + BasisX[1] * dataMat[1, i] + BasisX[2] * dataMat[2, i];
                 if (pdata > pmax) pmax = pdata;
@@ -77,19 +83,19 @@ namespace Han_Obj_Viewer
             return true;
         }
 
-        private static Matrix getMeanMat(Matrix mat)
+        private static DenseMatrix getMeanMat(DenseMatrix mat)
         {
-            Matrix meanMat = new Matrix(mat.Rows, mat.Columns);
+            DenseMatrix meanMat = new DenseMatrix(mat.RowCount, mat.ColumnCount);
 
-            for (int i = 0; i < mat.Rows; i++)
+            for (int i = 0; i < mat.RowCount; i++)
             {
                 double sum = 0;
-                for (int j = 0; j < mat.Columns; j++)
+                for (int j = 0; j < mat.ColumnCount; j++)
                 {
                     sum += mat[i, j];
                 }
-                double ave = sum / mat.Columns;
-                for (int j = 0; j < mat.Columns; j++)
+                double ave = sum / mat.ColumnCount;
+                for (int j = 0; j < mat.ColumnCount; j++)
                 {
                     meanMat[i, j] = ave;
                 }
@@ -97,13 +103,13 @@ namespace Han_Obj_Viewer
             return meanMat;
         }
 
-        private static int getMaxEigenValueIndex(double[] dblEigenValue)
+        private static int getMaxEigenValueIndex(Vector<Complex> eigenValues)
         {
             int index = 0;
             double max = 0;
-            for (int i = 0; i < dblEigenValue.Length; i++)
+            for (int i = 0; i < eigenValues.Count; i++)
             {
-                double val = Math.Abs(dblEigenValue[i]);
+                double val = eigenValues[i].Magnitude;
                 if (max < Math.Max(max, val))
                 {
                     max = val;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace Han_Obj_Viewer
 {
@@ -103,12 +104,12 @@ namespace Han_Obj_Viewer
             return GetLayer(p[0], p[1], p[2], Layer);
         }
 
-        public static CellIndex GetCellIndex(Matrix mat_source, Matrix mat_target, int minCellCount)
+        public static CellIndex GetCellIndex(DenseMatrix mat_source, DenseMatrix mat_target, int minCellCount)
         {
             double[] Min = { mat_source[0, 0], mat_source[1, 0], mat_source[2, 0] };
             double[] Max = { mat_source[0, 0], mat_source[1, 0], mat_source[2, 0] };
 
-            for (int i = 1; i < mat_source.Columns; i++)
+            for (int i = 1; i < mat_source.ColumnCount; i++)
             {
                 Min[0] = Math.Min(Min[0], mat_source[0, i]);
                 Min[1] = Math.Min(Min[1], mat_source[1, i]);
@@ -117,7 +118,7 @@ namespace Han_Obj_Viewer
                 Max[1] = Math.Max(Max[1], mat_source[1, i]);
                 Max[2] = Math.Max(Max[2], mat_source[2, i]);
             }
-            for (int i = 0; i < mat_target.Columns; i++)
+            for (int i = 0; i < mat_target.ColumnCount; i++)
             {
                 Min[0] = Math.Min(Min[0], mat_target[0, i]);
                 Min[1] = Math.Min(Min[1], mat_target[1, i]);
@@ -129,7 +130,7 @@ namespace Han_Obj_Viewer
 
             CellIndex cellIndex = new CellIndex(Min, Max, minCellCount);
 
-            for (int i = 0; i < mat_target.Columns; i++)
+            for (int i = 0; i < mat_target.ColumnCount; i++)
             {
                 double[] p = { mat_target[0, i], mat_target[1, i], mat_target[2, i] };
                 cellIndex.InsertPoint(p);
@@ -139,12 +140,12 @@ namespace Han_Obj_Viewer
         }
 
 
-        public Matrix DoPointMatch(Matrix mat_source)
+        public DenseMatrix DoPointMatch(DenseMatrix mat_source)
         {
 
-            Matrix matQ = new Matrix(mat_source.Rows, mat_source.Columns);
+            DenseMatrix matQ = new DenseMatrix(mat_source.RowCount, mat_source.ColumnCount);
 
-            for (int i = 0; i < mat_source.Columns; i++)
+            for (int i = 0; i < mat_source.ColumnCount; i++)
             {
                 List<double[]> Neighbor = new List<double[]>();
                 int Layer = 0;

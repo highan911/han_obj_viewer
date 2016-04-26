@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace Han_Obj_Viewer
 {
@@ -14,11 +15,11 @@ namespace Han_Obj_Viewer
         public double Scale = 1;//Scale
         //public bool R = false;//HasReflection
 
-        private Matrix Mat = new Matrix(4, 4);
+        private DenseMatrix Mat;
 
         public Transform()
         {
-            Mat.MakeUnitMatrix(4);
+            Mat = DenseMatrix.CreateIdentity(4);
         }
 
         public Transform(double[] BasisX, double[] BasisY, double[] BasisZ, double[] Origin, double Scale)
@@ -31,13 +32,13 @@ namespace Han_Obj_Viewer
             this.ToMatrix();
         }
 
-        public Transform(Matrix Mat)
+        public Transform(DenseMatrix Mat)
         {
             this.Mat = Mat;
             this.FromMatrix();
         }
 
-        public void DoTransform(Matrix mat)
+        public void DoTransform(DenseMatrix mat)
         {
             this.Mat = mat * this.Mat;
             this.FromMatrix();
@@ -66,7 +67,7 @@ namespace Han_Obj_Viewer
         0,cos,-sin,0,
         0,sin,cos,0,
         0,0,0,1};
-            Matrix MR = new Matrix(4, 4, MR_list);
+            DenseMatrix MR = new DenseMatrix(4, 4, MR_list).Transpose() as DenseMatrix;
             DoTransform(MR);
         }
 
@@ -79,7 +80,7 @@ namespace Han_Obj_Viewer
         0,1,0,0,
         -sin,0,cos,0,
         0,0,0,1};
-            Matrix MR = new Matrix(4, 4, MR_list);
+            DenseMatrix MR = new DenseMatrix(4, 4, MR_list).Transpose() as DenseMatrix;
             DoTransform(MR);
         }
 
@@ -92,7 +93,7 @@ namespace Han_Obj_Viewer
         sin,cos,0,0,
         0,0,1,0,
         0,0,0,1};
-            Matrix MR = new Matrix(4, 4, MR_list);
+            DenseMatrix MR = new DenseMatrix(4, 4, MR_list).Transpose() as DenseMatrix;
             DoTransform(MR);
         }
 
@@ -111,7 +112,7 @@ namespace Han_Obj_Viewer
             //}
             //else
             //{
-                Matrix coor = new Matrix(4, 1);
+                DenseMatrix coor = new DenseMatrix(4, 1);
                 coor[0, 0] = x;
                 coor[1, 0] = y;
                 coor[2, 0] = z;
@@ -167,9 +168,9 @@ namespace Han_Obj_Viewer
         0,0,Scale,0,
         0,0,0,1};
 
-            Matrix MT = new Matrix(4, 4, MT_list);
-            Matrix MR = new Matrix(4, 4, MR_list);
-            Matrix MS = new Matrix(4, 4, MS_list);
+            DenseMatrix MT = new DenseMatrix(4, 4, MT_list).Transpose() as DenseMatrix;
+            DenseMatrix MR = new DenseMatrix(4, 4, MR_list).Transpose() as DenseMatrix;
+            DenseMatrix MS = new DenseMatrix(4, 4, MS_list).Transpose() as DenseMatrix;
 
             this.Mat = MT * MR * MS;
         }
@@ -177,7 +178,8 @@ namespace Han_Obj_Viewer
 
         private void FromMatrix()
         {
-            Matrix mat = new Matrix(this.Mat);
+            DenseMatrix mat = new DenseMatrix(4, 4);
+            this.Mat.CopyTo(mat);
 
             Origin[0] = mat[0, 3];
             Origin[1] = mat[1, 3];
@@ -187,8 +189,7 @@ namespace Han_Obj_Viewer
         0,1,0,Origin[1],
         0,0,1,Origin[2],
         0,0,0,1};
-            Matrix IMT = new Matrix(4, 4, MT_list);
-            IMT.InvertGaussJordan();
+            DenseMatrix IMT = new DenseMatrix(4, 4, MT_list).Inverse().Transpose() as DenseMatrix;
             mat = IMT * mat;
 
             Scale = Math.Sqrt(mat[0, 0] * mat[0, 0] + mat[1, 0] * mat[1, 0] + mat[2, 0] * mat[2, 0]);
@@ -197,8 +198,7 @@ namespace Han_Obj_Viewer
         0,Scale,0,0,
         0,0,Scale,0,
         0,0,0,1};
-            Matrix IMS = new Matrix(4, 4, MS_list);
-            IMS.InvertGaussJordan();
+            DenseMatrix IMS = new DenseMatrix(4, 4, MS_list).Inverse().Transpose() as DenseMatrix;
             mat = mat * IMS;
 
             BasisX[0] = mat[0, 0]; BasisX[1] = mat[1, 0]; BasisX[2] = mat[2, 0];
@@ -206,9 +206,11 @@ namespace Han_Obj_Viewer
             BasisZ[0] = mat[0, 2]; BasisZ[1] = mat[1, 2]; BasisZ[2] = mat[2, 2];
         }
 
-        public Matrix GetMatrix()
+        public DenseMatrix GetMatrix()
         {
-            return new Matrix(Mat);
+            DenseMatrix mat = new DenseMatrix(4, 4);
+            Mat.CopyTo(mat);
+            return mat;
         }
 
     }

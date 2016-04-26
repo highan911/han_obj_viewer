@@ -46,6 +46,7 @@
             this.operationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.iCPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -74,7 +75,8 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
-            this.operationToolStripMenuItem});
+            this.operationToolStripMenuItem,
+            this.nextToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(832, 28);
@@ -193,16 +195,24 @@
             // resetToolStripMenuItem
             // 
             this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
-            this.resetToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(145, 24);
             this.resetToolStripMenuItem.Text = "Reset";
             this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
             // 
             // iCPToolStripMenuItem
             // 
             this.iCPToolStripMenuItem.Name = "iCPToolStripMenuItem";
-            this.iCPToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.iCPToolStripMenuItem.Size = new System.Drawing.Size(145, 24);
             this.iCPToolStripMenuItem.Text = "PCA / ICP";
             this.iCPToolStripMenuItem.Click += new System.EventHandler(this.iCPToolStripMenuItem_Click);
+            // 
+            // nextToolStripMenuItem
+            // 
+            this.nextToolStripMenuItem.Name = "nextToolStripMenuItem";
+            this.nextToolStripMenuItem.Size = new System.Drawing.Size(119, 24);
+            this.nextToolStripMenuItem.Text = "-> Next Loop";
+            this.nextToolStripMenuItem.Visible = false;
+            this.nextToolStripMenuItem.Click += new System.EventHandler(this.nextToolStripMenuItem_Click);
             // 
             // SharpGLForm
             // 
@@ -243,6 +253,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem doTransformToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveTransformedMeshToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem nextToolStripMenuItem;
     }
 }
 

@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MathNet.Numerics.LinearAlgebra.Double;
+
 
 namespace Han_Obj_Viewer
 {
@@ -133,9 +135,9 @@ namespace Han_Obj_Viewer
 
 
         // 4 rows, NSamples columns
-        public Matrix ToSampledDataMat(int NSamples)
+        public DenseMatrix ToSampledDataMat(int NSamples)
         {
-            Matrix mat = new Matrix(4, NSamples);
+            DenseMatrix mat = new DenseMatrix(4, NSamples);
             Random rnd = new Random();
             int[] rec = new int[Points.Count];
 
@@ -162,9 +164,9 @@ namespace Han_Obj_Viewer
         }
 
         // 4 rows, NPoint columns
-        public Matrix ToDataMat()
+        public DenseMatrix ToDataMat()
         {
-            Matrix mat = new Matrix(4, Points.Count);
+            DenseMatrix mat = new DenseMatrix(4, Points.Count);
             Random rnd = new Random();
             int[] rec = new int[Points.Count];
 

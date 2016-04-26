@@ -2,41 +2,40 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MathNet.Numerics.LinearAlgebra.Double;
+
 
 namespace Han_Obj_Viewer
 {
     public class Utils_SVD
     {
 
-        public static Matrix SVDGetTransMat(Matrix mat_source, Matrix mat_target, ref CellIndex cellIndex)
+        public static DenseMatrix SVDGetTransMat(DenseMatrix mat_source, DenseMatrix mat_target, ref CellIndex cellIndex)
         {
             //4 * NSamples
 
-            double[] data_source = new double[3 * mat_source.Columns];
-            Array.Copy(mat_source.GetData(), data_source, 3 * mat_source.Columns);
-            Matrix matP = new Matrix(3, mat_source.Columns, data_source);
+            DenseMatrix matP = mat_source.SubMatrix(0, 3, 0, mat_source.ColumnCount) as DenseMatrix;
 
             if (cellIndex == null)
             {
-                double[] data_target = new double[3 * mat_target.Columns];
-                Array.Copy(mat_target.GetData(), data_target, 3 * mat_target.Columns);
-                Matrix matQ_init = new Matrix(3, mat_target.Columns, data_target);
-
+                DenseMatrix matQ_init = mat_target.SubMatrix(0, 3, 0, mat_target.ColumnCount) as DenseMatrix;
                 cellIndex = CellIndex.GetCellIndex(matP, matQ_init, 2);
             }
 
-            Matrix matQ = cellIndex.DoPointMatch(matP);
+            DenseMatrix matQ = cellIndex.DoPointMatch(matP);
 
-            Matrix matM = matP * matQ.Transpose();
+            DenseMatrix matM = matP * matQ.Transpose() as DenseMatrix;
 
-            Matrix matU = new Matrix(3, 3);
-            Matrix matV = new Matrix(3, 3);
+            //matM.SplitUV(matU, matV, 0.01);
+            MathNet.Numerics.LinearAlgebra.Factorization.Svd<double> svd = matM.Svd();
 
-            matM.SplitUV(matU, matV, 0.0001);
+            DenseMatrix matU = svd.U as DenseMatrix;
+            DenseMatrix matVT = svd.VT as DenseMatrix;
 
-            Matrix matUV = matV * matU.Transpose();
-            Matrix matT = new Matrix(4, 4);
-            matT.MakeUnitMatrix(4);
+
+            DenseMatrix matUV = (matU * matVT).Transpose() as DenseMatrix;
+            DenseMatrix matT = DenseMatrix.CreateIdentity(4);
+
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
