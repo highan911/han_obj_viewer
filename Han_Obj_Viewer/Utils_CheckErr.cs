@@ -16,7 +16,7 @@ namespace Han_Obj_Viewer
             if (cellIndex == null)
             {
                 DenseMatrix matQ_init = mat_target.SubMatrix(0, 3, 0, mat_target.ColumnCount) as DenseMatrix;
-                cellIndex = CellIndex.GetCellIndex(matP, matQ_init, 2);
+                cellIndex = CellIndex.GetCellIndex(matP, matQ_init, 4);
             }
 
             DenseMatrix matQ = cellIndex.DoPointMatch(matP);

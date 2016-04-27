@@ -607,10 +607,10 @@ namespace Han_Obj_Viewer
         List<double> errList;
         CellIndex cellIndex, errCellIndex;
 
-        private void initICP()
+        private bool initICP()
         {
             Form_ICPMeshSelection form_Selection = new Form_ICPMeshSelection(geometryRoot);
-            if (form_Selection.ShowDialog() != DialogResult.OK) return;
+            if (form_Selection.ShowDialog() != DialogResult.OK) return false;
             TWO_MESHS_sourceObj = geometryRoot[form_Selection.source];
             TWO_MESHS_targetObj = geometryRoot[form_Selection.target];
 
@@ -668,6 +668,8 @@ namespace Han_Obj_Viewer
 
             //cellIndex = null;
             MessageBox.Show(err.ToString());
+
+            return true;
         }
 
         private Transform correctPCATransform(DenseMatrix inputMat_source, DenseMatrix inputMat_target, Transform PCATrans_source, Transform PCATrans_target)
@@ -727,7 +729,7 @@ namespace Han_Obj_Viewer
 
         private void iCPToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            initICP();
+            if (!initICP()) return;
             TWO_MESHS_sourceObj.Transform = new Transform(PCA_TransMat_target * SVD_TransMat * PCA_InvTransMat_source);
 
             if (SVDLoops > 0)

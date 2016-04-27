@@ -30,6 +30,7 @@ namespace Han_Obj_Viewer
         public void DisableSVD()
         {
             numericSVD.Enabled = false;
+            numericNSamples.Enabled = false;
         }
 
         private void comboBoxSource_SelectedIndexChanged(object sender, EventArgs e)
