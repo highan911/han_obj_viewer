@@ -626,7 +626,7 @@ namespace Han_Obj_Viewer
             TWO_MESHS_sourceObj.Transform = new Transform();
             TWO_MESHS_targetObj.Transform = new Transform();
 
-            double[] EigenValue_source, EigenValue_target;
+            //double[] EigenValue_source, EigenValue_target;
 
             inputMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NSamples);
             inputMat_target = TWO_MESHS_targetObj.ToSampledDataMat(NSamples);
@@ -635,8 +635,13 @@ namespace Han_Obj_Viewer
             checkMat_target = TWO_MESHS_targetObj.ToSampledDataMat(NCheck);
 
 
-            Utils_PCA.DoPCA(inputMat_source, out EigenValue_source, out PCATrans_source);
-            Utils_PCA.DoPCA(inputMat_target, out EigenValue_target, out PCATrans_target);
+            //Utils_PCA.DoPCA(inputMat_source, out EigenValue_source, out PCATrans_source);
+            //Utils_PCA.DoPCA(inputMat_target, out EigenValue_target, out PCATrans_target);
+            PCATrans_source = Utils_PCA.DoPCA(inputMat_source);
+            PCATrans_target = Utils_PCA.DoPCA(inputMat_target);
+
+            PCATrans_source = correctPCATransform(inputMat_source, inputMat_target, PCATrans_source, PCATrans_target);
+            //cellIndex initialized inside.
 
             PCA_InvTransMat_source = PCATrans_source.GetMatrix().Inverse() as DenseMatrix;
 
@@ -652,17 +657,45 @@ namespace Han_Obj_Viewer
 
             checkMat_source = PCA_InvTransMat_source * checkMat_source;
             checkMat_target = PCA_InvTransMat_target * checkMat_target;
+
             errCellIndex = null;
             double err = Utils_CheckErr.CheckErr(checkMat_source, checkMat_target, ref errCellIndex);
             errList.Add(err);
-
 
             SVD_TransMat = DenseMatrix.CreateIdentity(4);
 
             /// SVD Start
 
-            cellIndex = null;
+            //cellIndex = null;
             MessageBox.Show(err.ToString());
+        }
+
+        private Transform correctPCATransform(DenseMatrix inputMat_source, DenseMatrix inputMat_target, Transform PCATrans_source, Transform PCATrans_target)
+        {
+            DenseMatrix mat0 = PCATrans_source.GetMatrix();
+            List<DenseMatrix> mats = new List<DenseMatrix>();
+            double min = -1;
+            int minIndex = 0;
+
+            DenseMatrix invTrans_target = PCATrans_target.GetMatrix().Inverse() as DenseMatrix;
+            DenseMatrix invedMat_target = invTrans_target * inputMat_target;
+
+            for (int i = 0; i < 8; i++)
+            {
+                DenseMatrix mat = Utils_PCA.getMirroredTransMat(mat0, i);
+                mats.Add(mat);
+                DenseMatrix invTrans_source = mat.Inverse() as DenseMatrix;
+
+                double err = Utils_CheckErr.CheckErr(invTrans_source * inputMat_source, invedMat_target, ref cellIndex);
+                if (min < 0 || min > err)
+                {
+                    min = err;
+                    minIndex = i;
+                }
+            }
+
+            Transform newPCATrans_source = new Transform(mats[minIndex]);
+            return newPCATrans_source;
         }
 
         private void doSVD()

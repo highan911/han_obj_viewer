@@ -78,7 +78,7 @@ namespace Han_Obj_Viewer
                     {
                         if (k == zCell - Layer || k == zCell + Layer) Shell[2] = true;
                         else Shell[2] = false;
-                        if (!(Shell[0] && Shell[1] && Shell[2])) continue;
+                        if (!(Shell[0] || Shell[1] || Shell[2])) continue;
                         List<double[]> points = GetCell(i, j, k);
                         if (points != null) list.AddRange(points);
 
@@ -149,10 +149,18 @@ namespace Han_Obj_Viewer
             {
                 List<double[]> Neighbor = new List<double[]>();
                 int Layer = 0;
+                
+                Neighbor.AddRange(this.GetLayer(mat_source[0, i], mat_source[1, i], mat_source[2, i], Layer));
+                Layer++;
+                Neighbor.AddRange(this.GetLayer(mat_source[0, i], mat_source[1, i], mat_source[2, i], Layer));
+                Layer++;
+
                 while (Neighbor.Count == 0)
                 {
                     Neighbor.AddRange(this.GetLayer(mat_source[0, i], mat_source[1, i], mat_source[2, i], Layer));
                     Layer++;
+
+
                 }
                 double[] p = null;
                 double nearDist = -1;

@@ -27,23 +27,24 @@ namespace Han_Obj_Viewer
             DenseMatrix matM = matP * matQ.Transpose() as DenseMatrix;
 
             //matM.SplitUV(matU, matV, 0.01);
-            MathNet.Numerics.LinearAlgebra.Factorization.Svd<double> svd = matM.Svd();
+            MathNet.Numerics.LinearAlgebra.Factorization.Svd<double> svd = matM.Svd(true);
 
             DenseMatrix matU = svd.U as DenseMatrix;
             DenseMatrix matVT = svd.VT as DenseMatrix;
 
 
-            DenseMatrix matUV = (matU * matVT).Transpose() as DenseMatrix;
+            DenseMatrix matR = (matU * matVT).Transpose() as DenseMatrix;
             DenseMatrix matT = DenseMatrix.CreateIdentity(4);
 
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    matT[i, j] = matUV[i, j];
+                    matT[i, j] = matR[i, j];
                 }
             }
             return matT;
+
         }
 
     }
