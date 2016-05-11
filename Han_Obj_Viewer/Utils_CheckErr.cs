@@ -36,5 +36,10 @@ namespace Han_Obj_Viewer
 
         }
 
+        public static double CheckErr_Normal()
+        {
+            return 0;
+        }
+
     }
 }

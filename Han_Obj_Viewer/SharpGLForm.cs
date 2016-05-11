@@ -599,6 +599,9 @@ namespace Han_Obj_Viewer
             displayMode = DisplayMode.TWO_MESHS;
         }
 
+#region ICP/SVD
+
+
 
         DenseMatrix inputMat_source, inputMat_target, checkMat_source, checkMat_target;
         Transform PCATrans_source, PCATrans_target;
@@ -626,29 +629,21 @@ namespace Han_Obj_Viewer
             TWO_MESHS_sourceObj.Transform = new Transform();
             TWO_MESHS_targetObj.Transform = new Transform();
 
-            //double[] EigenValue_source, EigenValue_target;
-
             inputMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NSamples);
             inputMat_target = TWO_MESHS_targetObj.ToSampledDataMat(NSamples);
 
             checkMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NCheck);
             checkMat_target = TWO_MESHS_targetObj.ToSampledDataMat(NCheck);
 
-
-            //Utils_PCA.DoPCA(inputMat_source, out EigenValue_source, out PCATrans_source);
-            //Utils_PCA.DoPCA(inputMat_target, out EigenValue_target, out PCATrans_target);
             PCATrans_source = Utils_PCA.DoPCA(inputMat_source);
             PCATrans_target = Utils_PCA.DoPCA(inputMat_target);
 
             PCATrans_source = correctPCATransform(inputMat_source, inputMat_target, PCATrans_source, PCATrans_target);
-            //cellIndex initialized inside.
 
             PCA_InvTransMat_source = PCATrans_source.GetMatrix().Inverse() as DenseMatrix;
 
             PCA_TransMat_target = PCATrans_target.GetMatrix();
             PCA_InvTransMat_target = PCA_TransMat_target.Inverse() as DenseMatrix;
-
-            //TWO_MESHS_sourceObj.Transform = new Transform(PCA_TransMat);
 
             inputMat_source = PCA_InvTransMat_source * inputMat_source;
             inputMat_target = PCA_InvTransMat_target * inputMat_target;
@@ -664,9 +659,6 @@ namespace Han_Obj_Viewer
 
             SVD_TransMat = DenseMatrix.CreateIdentity(4);
 
-            /// SVD Start
-
-            //cellIndex = null;
             MessageBox.Show(err.ToString());
 
             return true;
@@ -757,6 +749,92 @@ namespace Han_Obj_Viewer
             SVDLoops--;
         }
 
+#endregion
+
+
+
+#region SA
+
+        DenseMatrix inputNormalMat_target, checkNormalMat_target;
+
+        private void sAToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            if (!initSA()) return;
+            TWO_MESHS_sourceObj.Transform = new Transform(PCA_TransMat_target * SVD_TransMat * PCA_InvTransMat_source);
+
+
+
+            endSA();
+            displayMode = DisplayMode.TWO_MESHS;
+
+        }
+
+
+        private bool initSA()
+        {
+            Form_SAMeshSelection form_Selection = new Form_SAMeshSelection(geometryRoot);
+            form_Selection.DisableSVD();
+            if (form_Selection.ShowDialog() != DialogResult.OK) return false;
+            TWO_MESHS_sourceObj = geometryRoot[form_Selection.source];
+            TWO_MESHS_targetObj = geometryRoot[form_Selection.target];
+
+            int NCheck = Math.Min(TWO_MESHS_sourceObj.Points.Count, TWO_MESHS_targetObj.Points.Count);
+
+            int NSamples = form_Selection.NSamples;
+
+            NSamples = Math.Min(NCheck, NSamples);
+
+
+            TWO_MESHS_sourceObj.Transform = new Transform();
+            TWO_MESHS_targetObj.Transform = new Transform();
+
+            inputMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NSamples);
+            inputMat_target = TWO_MESHS_targetObj.ToSampledDataMat(NSamples);
+
+            checkMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NCheck);
+            checkMat_target = TWO_MESHS_targetObj.ToSampledDataMat(NCheck);
+
+            PCATrans_source = Utils_PCA.DoPCA(inputMat_source);
+            PCATrans_target = Utils_PCA.DoPCA(inputMat_target);
+
+            PCATrans_source = correctPCATransform(inputMat_source, inputMat_target, PCATrans_source, PCATrans_target);
+
+            PCA_InvTransMat_source = PCATrans_source.GetMatrix().Inverse() as DenseMatrix;
+
+            PCA_TransMat_target = PCATrans_target.GetMatrix();
+            PCA_InvTransMat_target = PCA_TransMat_target.Inverse() as DenseMatrix;
+
+            inputMat_source = PCA_InvTransMat_source * inputMat_source;
+            inputMat_target = PCA_InvTransMat_target * inputMat_target;
+
+            errList = new List<double>();
+
+            checkMat_source = PCA_InvTransMat_source * checkMat_source;
+            checkMat_target = PCA_InvTransMat_target * checkMat_target;
+
+            errCellIndex = null;
+            double err = Utils_CheckErr.CheckErr(checkMat_source, checkMat_target, ref errCellIndex);
+            errList.Add(err);
+
+            SVD_TransMat = DenseMatrix.CreateIdentity(4);
+
+            MessageBox.Show(err.ToString());
+
+            return true;
+        }
+
+        private void endSA()
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+
+#endregion
+
+
 
         private void doTransformToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -794,7 +872,5 @@ namespace Han_Obj_Viewer
                 MessageBox.Show("Error writing: " + path);
             }
         }
-
-
     }
 }

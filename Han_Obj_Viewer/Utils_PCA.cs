@@ -92,7 +92,7 @@ namespace Han_Obj_Viewer
             return PCATrans;
         }
 
-        private static DenseMatrix getMeanMat(DenseMatrix mat)
+        public static DenseMatrix getMeanMat(DenseMatrix mat)
         {
             DenseMatrix meanMat = new DenseMatrix(mat.RowCount, mat.ColumnCount);
 

@@ -24,6 +24,22 @@ namespace Han_Obj_Viewer
 
             DenseMatrix matQ = cellIndex.DoPointMatch(matP);
 
+            DenseMatrix matP_Mean = Utils_PCA.getMeanMat(matP);
+            DenseMatrix matQ_Mean = Utils_PCA.getMeanMat(matQ);
+
+            DenseMatrix matT_MoveP = DenseMatrix.CreateIdentity(4);
+            DenseMatrix matT_MoveQ = DenseMatrix.CreateIdentity(4);
+            for (int i = 0; i < 3; i++)
+            {
+                matT_MoveP[i, 3] = matP_Mean[i, 0];
+                matT_MoveQ[i, 3] = matQ_Mean[i, 0];
+            }
+
+
+            matP = matP - matP_Mean;
+            matQ = matQ - matQ_Mean;
+
+
             DenseMatrix matM = matP * matQ.Transpose() as DenseMatrix;
 
             //matM.SplitUV(matU, matV, 0.01);
@@ -43,6 +59,9 @@ namespace Han_Obj_Viewer
                     matT[i, j] = matR[i, j];
                 }
             }
+
+            matT = matT_MoveP.Inverse() * matT * matT_MoveQ as DenseMatrix;
+
             return matT;
 
         }

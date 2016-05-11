@@ -214,6 +214,11 @@ namespace Han_Obj_Viewer
             return list;
         }
 
+        public XYZ GetNormal()
+        {
+            return null;
+        }
+
     }
 
     public class Edge

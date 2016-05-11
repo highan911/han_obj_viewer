@@ -47,6 +47,7 @@
             this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.iCPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -187,7 +188,8 @@
             // 
             this.operationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.resetToolStripMenuItem,
-            this.iCPToolStripMenuItem});
+            this.iCPToolStripMenuItem,
+            this.sAToolStripMenuItem});
             this.operationToolStripMenuItem.Name = "operationToolStripMenuItem";
             this.operationToolStripMenuItem.Size = new System.Drawing.Size(97, 24);
             this.operationToolStripMenuItem.Text = "Alignment";
@@ -195,14 +197,14 @@
             // resetToolStripMenuItem
             // 
             this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
-            this.resetToolStripMenuItem.Size = new System.Drawing.Size(145, 24);
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(228, 24);
             this.resetToolStripMenuItem.Text = "Reset";
             this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
             // 
             // iCPToolStripMenuItem
             // 
             this.iCPToolStripMenuItem.Name = "iCPToolStripMenuItem";
-            this.iCPToolStripMenuItem.Size = new System.Drawing.Size(145, 24);
+            this.iCPToolStripMenuItem.Size = new System.Drawing.Size(228, 24);
             this.iCPToolStripMenuItem.Text = "PCA / ICP";
             this.iCPToolStripMenuItem.Click += new System.EventHandler(this.iCPToolStripMenuItem_Click);
             // 
@@ -213,6 +215,13 @@
             this.nextToolStripMenuItem.Text = "-> Next Loop";
             this.nextToolStripMenuItem.Visible = false;
             this.nextToolStripMenuItem.Click += new System.EventHandler(this.nextToolStripMenuItem_Click);
+            // 
+            // sAToolStripMenuItem
+            // 
+            this.sAToolStripMenuItem.Name = "sAToolStripMenuItem";
+            this.sAToolStripMenuItem.Size = new System.Drawing.Size(228, 24);
+            this.sAToolStripMenuItem.Text = "Simulated Annealing";
+            this.sAToolStripMenuItem.Click += new System.EventHandler(this.sAToolStripMenuItem_Click);
             // 
             // SharpGLForm
             // 
@@ -254,6 +263,7 @@
         private System.Windows.Forms.ToolStripMenuItem doTransformToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveTransformedMeshToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem nextToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sAToolStripMenuItem;
     }
 }
 

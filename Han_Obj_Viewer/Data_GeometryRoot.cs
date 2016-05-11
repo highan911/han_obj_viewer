@@ -163,6 +163,38 @@ namespace Han_Obj_Viewer
             return mat;
         }
 
+
+        public DenseMatrix ToSampledDataMat_WithNormal(int NSamples, out DenseMatrix NormalMat)
+        {
+            NormalMat = new DenseMatrix(4, NSamples);
+
+            DenseMatrix mat = new DenseMatrix(4, NSamples);
+            Random rnd = new Random();
+            int[] rec = new int[Points.Count];
+
+            int index = 0;
+
+            for (int i = 0; i < NSamples; i++)
+            {
+                while (true)
+                {
+                    index = rnd.Next(Points.Count);
+                    if (rec[index] == 0)
+                    {
+                        rec[index] = 1;
+                        break;
+                    }
+                }
+
+                mat[0, i] = Points[index].XYZ.X;
+                mat[1, i] = Points[index].XYZ.Y;
+                mat[2, i] = Points[index].XYZ.Z;
+                mat[3, i] = 1;
+            }
+            return mat;
+        }
+
+
         // 4 rows, NPoint columns
         public DenseMatrix ToDataMat()
         {
