@@ -216,7 +216,21 @@ namespace Han_Obj_Viewer
 
         public XYZ GetNormal()
         {
-            return null;
+            List<int> list = new List<int>();
+            XYZ normal = new XYZ(0, 0, 0);
+            foreach (Edge edge in Edges)
+            {
+                foreach (Triangle tri in edge.Triangles)
+                {
+                    if (!list.Contains(tri.Id))
+                    {
+                        list.Add(tri.Id);
+                        normal = XYZ.Add(normal, tri.Normal());
+                    }
+                }
+            }
+            normal = normal.Scale(1.0 / normal.GetLength());
+            return normal;
         }
 
     }

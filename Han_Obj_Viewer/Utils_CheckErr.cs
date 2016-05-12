@@ -40,18 +40,5 @@ namespace Han_Obj_Viewer
         {
             return 0;
         }
-
-        public double CalculateTotalDistance(double[] data)//Transform
-        {
-            Transform transform = new Transform();
-            transform.DoMove(data[0], data[1], data[2]);
-            transform.DoRotateX(data[3]);
-            transform.DoRotateY(data[4]);
-            transform.DoRotateZ(data[5]);
-            transform.DoScale(data[6]);
-
-            return 0;
-        }
-
     }
 }

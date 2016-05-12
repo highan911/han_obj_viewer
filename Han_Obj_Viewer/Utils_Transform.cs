@@ -101,17 +101,6 @@ namespace Han_Obj_Viewer
 
         public void ApplyTrans(double x, double y, double z, out double xp, out double yp, out double zp)
         {
-            //if (Mat == null)
-            //{
-            //    x = Scale * x;
-            //    y = Scale * y;
-            //    z = Scale * z;
-            //    xp = x * BasisX[0] + y * BasisY[0] + z * BasisZ[0] + Origin[0];
-            //    yp = x * BasisX[1] + y * BasisY[1] + z * BasisZ[1] + Origin[1];
-            //    zp = x * BasisX[2] + y * BasisY[2] + z * BasisZ[2] + Origin[2];
-            //}
-            //else
-            //{
                 DenseMatrix coor = new DenseMatrix(4, 1);
                 coor[0, 0] = x;
                 coor[1, 0] = y;
@@ -121,56 +110,47 @@ namespace Han_Obj_Viewer
                 xp = coor[0, 0];
                 yp = coor[1, 0];
                 zp = coor[2, 0];
-            //}
         }
 
-        //public void Rotate(int x, int y, int z, out int xp, out int yp, out int zp)
-        //{
-        //    //x = (int)S * x;
-        //    //y = (int)S * y;
-        //    //z = (int)S * z;
-        //    xp = (int)(x * X[0] + y * Y[0] + z * Z[0]);
-        //    yp = (int)(x * X[1] + y * Y[1] + z * Z[1]);
-        //    zp = (int)(x * X[2] + y * Y[2] + z * Z[2]);
-        //}
-
-        //private List<int> XYZInt(XYZ P)
-        //{
-        //    return new PointInt(P).ToArray();
-        //}
-        //private List<double> XYZ(XYZ P)
-        //{
-        //    List<double> list = new List<double>();
-        //    list.Add(P.X.ToZero());
-        //    list.Add(P.Y.ToZero());
-        //    list.Add(P.Z.ToZero());
-        //    return list;
-        //}
-
-
-        private void ToMatrix()
+        public DenseMatrix ToMoveMatrix()
         {
             double[] MT_list = 
         {1,0,0,Origin[0],
         0,1,0,Origin[1],
         0,0,1,Origin[2],
         0,0,0,1};
+            DenseMatrix MT = new DenseMatrix(4, 4, MT_list).Transpose() as DenseMatrix;
+            return MT;
+        }
 
+        public DenseMatrix ToRotationMatrix()
+        {
             double[] MR_list = 
         {BasisX[0],BasisY[0],BasisZ[0],0,
         BasisX[1],BasisY[1],BasisZ[1],0,
         BasisX[2],BasisY[2],BasisZ[2],0,
         0,0,0,1};
+            DenseMatrix MR = new DenseMatrix(4, 4, MR_list).Transpose() as DenseMatrix;
+            return MR;
+        }
 
+        public DenseMatrix ToScaleMatrix()
+        {
             double[] MS_list = 
         {Scale,0,0,0,
         0,Scale,0,0,
         0,0,Scale,0,
         0,0,0,1};
-
-            DenseMatrix MT = new DenseMatrix(4, 4, MT_list).Transpose() as DenseMatrix;
-            DenseMatrix MR = new DenseMatrix(4, 4, MR_list).Transpose() as DenseMatrix;
             DenseMatrix MS = new DenseMatrix(4, 4, MS_list).Transpose() as DenseMatrix;
+            return MS;
+        }
+
+
+        private void ToMatrix()
+        {
+            DenseMatrix MT = ToMoveMatrix();
+            DenseMatrix MR = ToRotationMatrix();
+            DenseMatrix MS = ToScaleMatrix();
 
             this.Mat = MT * MR * MS;
         }

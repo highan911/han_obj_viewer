@@ -190,6 +190,14 @@ namespace Han_Obj_Viewer
                 mat[1, i] = Points[index].XYZ.Y;
                 mat[2, i] = Points[index].XYZ.Z;
                 mat[3, i] = 1;
+
+                XYZ normal = Points[index].GetNormal();
+
+                NormalMat[0, i] = normal.X;
+                NormalMat[1, i] = normal.Y;
+                NormalMat[2, i] = normal.Z;
+                NormalMat[3, i] = 1;
+
             }
             return mat;
         }

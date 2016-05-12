@@ -755,20 +755,28 @@ namespace Han_Obj_Viewer
 
 #region SA
 
-        DenseMatrix inputNormalMat_target, checkNormalMat_target;
+        DenseMatrix inputNormalMat_target, checkNormalMat_target, SA_TransMat;
+        SA_Processor sa_Processor;
 
         private void sAToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
             if (!initSA()) return;
-            TWO_MESHS_sourceObj.Transform = new Transform(PCA_TransMat_target * SVD_TransMat * PCA_InvTransMat_source);
+            double[] initData = new double[7];
+            double[] initSigmas = { 1, 1, 1, 0.1, 0.1, 0.1, 0.1 };
 
+            double initTemperature = 20;
 
+            sa_Processor = new SA_Processor(SA_CalculateErr, initTemperature, initData, initSigmas);
+
+            sa_Processor.DoSA();
 
             endSA();
             displayMode = DisplayMode.TWO_MESHS;
 
         }
+
+
 
 
         private bool initSA()
@@ -786,47 +794,120 @@ namespace Han_Obj_Viewer
             NSamples = Math.Min(NCheck, NSamples);
 
 
-            TWO_MESHS_sourceObj.Transform = new Transform();
-            TWO_MESHS_targetObj.Transform = new Transform();
+            //TWO_MESHS_sourceObj.Transform = new Transform();
+            //TWO_MESHS_targetObj.Transform = new Transform();
 
             inputMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NSamples);
-            inputMat_target = TWO_MESHS_targetObj.ToSampledDataMat(NSamples);
+            inputMat_target = TWO_MESHS_targetObj.ToSampledDataMat_WithNormal(NSamples, out inputNormalMat_target);
 
-            checkMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NCheck);
-            checkMat_target = TWO_MESHS_targetObj.ToSampledDataMat(NCheck);
+            //checkMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NCheck);
+            //checkMat_target = TWO_MESHS_targetObj.ToSampledDataMat_WithNormal(NCheck, out checkNormalMat_target);
 
-            PCATrans_source = Utils_PCA.DoPCA(inputMat_source);
-            PCATrans_target = Utils_PCA.DoPCA(inputMat_target);
+            //PCATrans_source = Utils_PCA.DoPCA(inputMat_source);
+            //PCATrans_target = Utils_PCA.DoPCA(inputMat_target);
 
-            PCATrans_source = correctPCATransform(inputMat_source, inputMat_target, PCATrans_source, PCATrans_target);
+            //PCATrans_source = correctPCATransform(inputMat_source, inputMat_target, PCATrans_source, PCATrans_target);
 
-            PCA_InvTransMat_source = PCATrans_source.GetMatrix().Inverse() as DenseMatrix;
+            //PCA_InvTransMat_source = PCATrans_source.GetMatrix().Inverse() as DenseMatrix;
 
-            PCA_TransMat_target = PCATrans_target.GetMatrix();
-            PCA_InvTransMat_target = PCA_TransMat_target.Inverse() as DenseMatrix;
+            //PCA_TransMat_target = PCATrans_target.GetMatrix();
+            //PCA_InvTransMat_target = PCA_TransMat_target.Inverse() as DenseMatrix;
 
-            inputMat_source = PCA_InvTransMat_source * inputMat_source;
-            inputMat_target = PCA_InvTransMat_target * inputMat_target;
+            //inputMat_source = PCA_InvTransMat_source * inputMat_source;
+            //inputMat_target = PCA_InvTransMat_target * inputMat_target;
 
-            errList = new List<double>();
+            //inputNormalMat_target = PCATrans_target.ToRotationMatrix().Inverse() * inputNormalMat_target as DenseMatrix;
+            //checkNormalMat_target = PCATrans_target.ToRotationMatrix().Inverse() * checkNormalMat_target as DenseMatrix;
 
-            checkMat_source = PCA_InvTransMat_source * checkMat_source;
-            checkMat_target = PCA_InvTransMat_target * checkMat_target;
+            //checkMat_source = PCA_InvTransMat_source * checkMat_source;
+            //checkMat_target = PCA_InvTransMat_target * checkMat_target;
 
-            errCellIndex = null;
-            double err = Utils_CheckErr.CheckErr(checkMat_source, checkMat_target, ref errCellIndex);
-            errList.Add(err);
+            //errList = new List<double>();
+            //errCellIndex = null;
+            //double err = Utils_CheckErr.CheckErr(checkMat_source, checkMat_target, ref errCellIndex);
+            //errList.Add(err);
 
-            SVD_TransMat = DenseMatrix.CreateIdentity(4);
+            //SVD_TransMat = DenseMatrix.CreateIdentity(4);
 
-            MessageBox.Show(err.ToString());
+            //MessageBox.Show(err.ToString());
 
             return true;
         }
 
+
+
+        public double SA_CalculateErr(double[] data)
+        {
+            Transform transform = new Transform();
+            transform.DoMove(data[0], data[1], data[2]);
+            transform.DoRotateX(data[3]);
+            transform.DoRotateY(data[4]);
+            transform.DoRotateZ(data[5]);
+            transform.DoScale(data[6]);
+
+            //TODO
+            DenseMatrix matP_init = new DenseMatrix(4, inputMat_source.ColumnCount);
+            inputMat_source.CopyTo(matP_init);
+            matP_init = transform.GetMatrix() * matP_init;
+            DenseMatrix matP = matP_init.SubMatrix(0, 3, 0, matP_init.ColumnCount) as DenseMatrix;
+
+            if (cellIndex == null)
+            {
+                DenseMatrix matQ_init = inputMat_target.SubMatrix(0, 3, 0, inputMat_target.ColumnCount) as DenseMatrix;
+                cellIndex = CellIndex.GetCellIndex(matP, matQ_init, 4);
+            }
+
+            DenseMatrix matQ = cellIndex.DoPointMatch(matP);
+            DenseMatrix matErr = matQ - matP;
+
+            double Err = 0;
+
+            for (int i = 0; i < matErr.ColumnCount; i++)
+            {
+                //Err += Math.Abs(matErr[0, i] * inputNormalMat_target[0, i]
+                //    + matErr[1, i] * inputNormalMat_target[1, i]
+                //    + matErr[2, i] * inputNormalMat_target[2, i]);
+                Err += Math.Sqrt(matErr[0, i] * matErr[0, i] + matErr[1, i] * matErr[1, i] + matErr[2, i] * matErr[2, i]);
+            }
+
+            Err = Err / matErr.ColumnCount;
+
+            double absScale = Math.Abs(data[6]);
+
+            if (absScale > 1)
+            {
+                Err = Err * absScale;
+            }
+            else
+            {
+                Err = Err / absScale;
+            }
+
+            return Err;
+        }
+
         private void endSA()
         {
-            throw new NotImplementedException();
+            string str = "";
+            foreach (double rec in sa_Processor.Record)
+            {
+                str += rec.ToString() + "\n";
+            }
+            StreamWriter writer = new StreamWriter("d:/rec.txt");
+            writer.Write(str);
+            writer.Close();
+            MessageBox.Show(sa_Processor.currentValue.ToString());
+
+            double[] data = sa_Processor.currentData;
+
+            Transform SA_Transform = new Transform();
+            SA_Transform.DoMove(data[0], data[1], data[2]);
+            SA_Transform.DoRotateX(data[3]);
+            SA_Transform.DoRotateY(data[4]);
+            SA_Transform.DoRotateZ(data[5]);
+            SA_Transform.DoScale(data[6]);
+
+            TWO_MESHS_sourceObj.Transform = SA_Transform;
         }
 
 
