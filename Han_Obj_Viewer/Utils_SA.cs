@@ -16,8 +16,8 @@ namespace Han_Obj_Viewer
         public double currentMinValue;
         public double[] currentMinData;
         double[] Sigmas;//the sigma values of Normal Random Sampling
-        double alphaT = 0.85;//(0,1), the decreasion rate of Temperature;
-        double alphaS = 0.97;//(0,1), the decreasion rate of Sigmas;
+        double alphaT = 0.88;//(0,1), the decreasion rate of Temperature;
+        double alphaS = 1;//(0,1), the decreasion rate of Sigmas;
 
         //double lambda;//Random(0, 1)
         Random random = new Random();

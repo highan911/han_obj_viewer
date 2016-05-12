@@ -762,8 +762,8 @@ namespace Han_Obj_Viewer
         {
 
             if (!initSA()) return;
-            double[] initData = new double[7];
-            double[] initSigmas = { 1, 1, 1, 0.1, 0.1, 0.1, 0.1 };
+            double[] initData = { 0, 0, 0, 0, 0, 0, 1 };
+            double[] initSigmas = { 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01 };
 
             double initTemperature = 20;
 
@@ -794,8 +794,8 @@ namespace Han_Obj_Viewer
             NSamples = Math.Min(NCheck, NSamples);
 
 
-            //TWO_MESHS_sourceObj.Transform = new Transform();
-            //TWO_MESHS_targetObj.Transform = new Transform();
+            TWO_MESHS_sourceObj.Transform = new Transform();
+            TWO_MESHS_targetObj.Transform = new Transform();
 
             inputMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NSamples);
             inputMat_target = TWO_MESHS_targetObj.ToSampledDataMat_WithNormal(NSamples, out inputNormalMat_target);
@@ -803,20 +803,20 @@ namespace Han_Obj_Viewer
             //checkMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NCheck);
             //checkMat_target = TWO_MESHS_targetObj.ToSampledDataMat_WithNormal(NCheck, out checkNormalMat_target);
 
-            //PCATrans_source = Utils_PCA.DoPCA(inputMat_source);
-            //PCATrans_target = Utils_PCA.DoPCA(inputMat_target);
+            PCATrans_source = Utils_PCA.DoPCA(inputMat_source);
+            PCATrans_target = Utils_PCA.DoPCA(inputMat_target);
 
-            //PCATrans_source = correctPCATransform(inputMat_source, inputMat_target, PCATrans_source, PCATrans_target);
+            PCATrans_source = correctPCATransform(inputMat_source, inputMat_target, PCATrans_source, PCATrans_target);
 
-            //PCA_InvTransMat_source = PCATrans_source.GetMatrix().Inverse() as DenseMatrix;
+            PCA_InvTransMat_source = PCATrans_source.GetMatrix().Inverse() as DenseMatrix;
 
-            //PCA_TransMat_target = PCATrans_target.GetMatrix();
-            //PCA_InvTransMat_target = PCA_TransMat_target.Inverse() as DenseMatrix;
+            PCA_TransMat_target = PCATrans_target.GetMatrix();
+            PCA_InvTransMat_target = PCA_TransMat_target.Inverse() as DenseMatrix;
 
-            //inputMat_source = PCA_InvTransMat_source * inputMat_source;
-            //inputMat_target = PCA_InvTransMat_target * inputMat_target;
+            inputMat_source = PCA_InvTransMat_source * inputMat_source;
+            inputMat_target = PCA_InvTransMat_target * inputMat_target;
 
-            //inputNormalMat_target = PCATrans_target.ToRotationMatrix().Inverse() * inputNormalMat_target as DenseMatrix;
+            inputNormalMat_target = PCATrans_target.ToRotationMatrix().Inverse() * inputNormalMat_target as DenseMatrix;
             //checkNormalMat_target = PCATrans_target.ToRotationMatrix().Inverse() * checkNormalMat_target as DenseMatrix;
 
             //checkMat_source = PCA_InvTransMat_source * checkMat_source;
@@ -907,7 +907,7 @@ namespace Han_Obj_Viewer
             SA_Transform.DoRotateZ(data[5]);
             SA_Transform.DoScale(data[6]);
 
-            TWO_MESHS_sourceObj.Transform = SA_Transform;
+            TWO_MESHS_sourceObj.Transform = new Transform(PCA_TransMat_target * SA_Transform.GetMatrix() * PCA_InvTransMat_source);
         }
 
 
