@@ -3,42 +3,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MathNet.Numerics.Distributions;
+using System.Threading;
 
 namespace Han_Obj_Viewer
 {
     public class SA_Processor
     {
-
-        double Temperature;
+        double InitTemperature;
         int DataLength;
         public double currentValue;
         public double[] currentData;
         public double currentMinValue;
         public double[] currentMinData;
-        double[] Sigmas;//the sigma values of Normal Random Sampling
-        double alphaT = 0.88;//(0,1), the decreasion rate of Temperature;
-        double alphaS = 1;//(0,1), the decreasion rate of Sigmas;
-
-        //double lambda;//Random(0, 1)
+        double[] RangeTops;
+        double[] RangeBottoms;
+        double alphaT = 0.8;
         Random random = new Random();
 
 
         //TODO
-        private int innerIterCount_Limit = 20;
-        private int outerIterCount_Limit = 200;
+        private int innerIterCount_Limit = 100;
+        private int innerIterCount_Accept_Limit = 10;
+        private int outerIterCount_Limit = 120;
 
         public delegate double ValueFunction(double[] data);
         ValueFunction TheValueFunction;
 
         public List<double> Record;
 
-        public SA_Processor(ValueFunction TheValueFunction, double initTemperature, double[] initData, double[] initSigmas)
+
+        public SA_Processor(ValueFunction TheValueFunction, double initTemperature, double[] initData, double[] RangeTops, double[] RangeBottoms)
         {
             this.TheValueFunction = TheValueFunction;
-            this.Temperature = initTemperature;
+            this.InitTemperature = initTemperature;
             this.currentData = initData;
             this.currentMinData = initData;
-            this.Sigmas = initSigmas;
+            this.RangeTops = RangeTops;
+            this.RangeBottoms = RangeBottoms;
             DataLength = initData.Length;
 
             this.currentValue = TheValueFunction(currentData);
@@ -48,40 +49,68 @@ namespace Han_Obj_Viewer
             Record.Add(this.currentValue);
         }
 
-        private double[] GetNormalRandomData()
+        private double[] GetRandomData()
         {
             double[] newData = new double[DataLength];
             for (int i = 0; i < DataLength; i++)
             {
-                Normal normal = new Normal(currentData[i], Sigmas[i], random);
-                newData[i] = normal.Sample();
+                double sample = random.NextDouble();
+                newData[i] = RangeBottoms[i] + sample * (RangeTops[i] - RangeBottoms[i]);
             }
             return newData;
         }
 
-        private double[] GetNormalRandomData_OneDim()
+        private double[] GetRandomData_OneDim()
+        {
+            int dim_i = random.Next(DataLength);
+            return GetRandomData_OneDim(dim_i);
+        }
+
+        private double[] GetRandomData_OneDim(int dim_i)
         {
             double[] newData = new double[DataLength];
-
-            int i = random.Next(DataLength);
-
-            Normal normal = new Normal(currentData[i], Sigmas[i], random);
-            newData[i] = normal.Sample();
-
+            for (int i = 0; i < DataLength; i++)
+            {
+                newData[i] = currentData[i];
+            }
+            double sample = random.NextDouble();
+            newData[dim_i] = RangeBottoms[dim_i] + sample * (RangeTops[dim_i] - RangeBottoms[dim_i]);
             return newData;
         }
 
-        public void DoSA()
+        public void DoSA(Form_SA form)
         {
+
+            double Temperature = InitTemperature;
+
             int outerIterCount = 0;
-            while (true)
+            int totalIterCount = 0;
+            int totalAccept = 0;
+
+            for (outerIterCount = 0; outerIterCount < outerIterCount_Limit; outerIterCount++)
             {
+                //Temperature = (outerIterCount_Limit - outerIterCount) * InitTemperature / outerIterCount_Limit;
+                Temperature = Temperature * alphaT;
                 //inner loop: same temperature
                 int innerIterCount = 0;
-                while (true)
+
+                int InnerAcceptCount = 0;
+
+                int dim_i = random.Next(DataLength);
+
+                for(innerIterCount = 0; innerIterCount < innerIterCount_Limit; innerIterCount++)
                 {
-                    double[] newData = GetNormalRandomData();
+                    totalIterCount++;
+
+                    if (innerIterCount > innerIterCount_Limit)
+                        break;
+                    if (!form.IsOpening)
+                        break;
+
+                    double[] newData = GetRandomData_OneDim(dim_i);
                     double nowValue = TheValueFunction(newData);
+
+                    form.SetVal(Temperature, outerIterCount, innerIterCount, totalIterCount, totalAccept, nowValue, currentMinValue);
 
                     Record.Add(nowValue);
                     if (nowValue < currentMinValue)
@@ -90,6 +119,12 @@ namespace Han_Obj_Viewer
                         currentData = newData;
                         currentMinValue = nowValue;
                         currentMinData = newData;
+
+                        InnerAcceptCount++;
+                        totalAccept++;
+                        if (InnerAcceptCount > innerIterCount_Accept_Limit)
+                            break;
+                        if (dim_i == 7) break;
                         continue;
                     }
 
@@ -105,36 +140,24 @@ namespace Han_Obj_Viewer
                     else
                     {
                         double probability = Math.Exp(-(deltaValue / Temperature));
-                        double lambda = ((double)(random.Next() % 10000)) / 10000.0;
+                        double lambda = random.NextDouble();
                         if (probability > lambda)
                         {
                             currentValue = nowValue;
                             currentData = newData;
+                            InnerAcceptCount++;
+                            totalAccept++;
+                            if (InnerAcceptCount > innerIterCount_Accept_Limit)
+                                break;
+                            if (dim_i == 7) break;
                         }
                     }
-                    if (innerIterCount >= innerIterCount_Limit)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        innerIterCount++;
-                    }
+                    
                 }
-
-                Temperature = alphaT * Temperature;
-                for (int i = 0; i < DataLength; i++) Sigmas[i] = alphaS * Sigmas[i];
-
-                if (outerIterCount >= outerIterCount_Limit)
-                {
+                if (!form.IsOpening)
                     break;
-                }
-                else
-                {
-                    outerIterCount++;
-                }
-
             }
+            //form.Close();
         }
     }
 }

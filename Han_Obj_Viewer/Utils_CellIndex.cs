@@ -104,20 +104,11 @@ namespace Han_Obj_Viewer
             return GetLayer(p[0], p[1], p[2], Layer);
         }
 
-        public static CellIndex GetCellIndex(DenseMatrix mat_source, DenseMatrix mat_target, int minCellCount)
+        public static CellIndex GetCellIndex(DenseMatrix mat_target, int minCellCount)
         {
-            double[] Min = { mat_source[0, 0], mat_source[1, 0], mat_source[2, 0] };
-            double[] Max = { mat_source[0, 0], mat_source[1, 0], mat_source[2, 0] };
+            double[] Min = { mat_target[0, 0], mat_target[1, 0], mat_target[2, 0] };
+            double[] Max = { mat_target[0, 0], mat_target[1, 0], mat_target[2, 0] };
 
-            for (int i = 1; i < mat_source.ColumnCount; i++)
-            {
-                Min[0] = Math.Min(Min[0], mat_source[0, i]);
-                Min[1] = Math.Min(Min[1], mat_source[1, i]);
-                Min[2] = Math.Min(Min[2], mat_source[2, i]);
-                Max[0] = Math.Max(Max[0], mat_source[0, i]);
-                Max[1] = Math.Max(Max[1], mat_source[1, i]);
-                Max[2] = Math.Max(Max[2], mat_source[2, i]);
-            }
             for (int i = 0; i < mat_target.ColumnCount; i++)
             {
                 Min[0] = Math.Min(Min[0], mat_target[0, i]);

@@ -34,14 +34,12 @@ namespace Han_Obj_Viewer
 
         public Transform(DenseMatrix Mat)
         {
-            this.Mat = Mat;
-            this.FromMatrix();
+            this.SetMatrix(Mat);
         }
 
         public void DoTransform(DenseMatrix mat)
         {
-            this.Mat = mat * this.Mat;
-            this.FromMatrix();
+            this.SetMatrix(mat * this.Mat);
         }
 
         public void DoScale(double scale)
@@ -156,8 +154,9 @@ namespace Han_Obj_Viewer
         }
 
 
-        private void FromMatrix()
+        public void SetMatrix(DenseMatrix matrix)
         {
+            this.Mat = matrix;
             DenseMatrix mat = new DenseMatrix(4, 4);
             this.Mat.CopyTo(mat);
 

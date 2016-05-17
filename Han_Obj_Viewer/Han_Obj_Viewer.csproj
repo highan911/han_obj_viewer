@@ -94,6 +94,12 @@
     <Compile Include="Form_Id.Designer.cs">
       <DependentUpon>Form_Id.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form_SA.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_SA.Designer.cs">
+      <DependentUpon>Form_SA.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form_SetTransform.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -128,6 +134,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Id.resx">
       <DependentUpon>Form_Id.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_SA.resx">
+      <DependentUpon>Form_SA.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_SetTransform.resx">
       <DependentUpon>Form_SetTransform.cs</DependentUpon>
