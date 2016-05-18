@@ -17,14 +17,15 @@ namespace Han_Obj_Viewer
         public double[] currentMinData;
         double[] RangeTops;
         double[] RangeBottoms;
-        double alphaT = 0.8;
+        double alphaT = 0.95;
         Random random = new Random();
 
 
         //TODO
         private int innerIterCount_Limit = 100;
         private int innerIterCount_Accept_Limit = 10;
-        private int outerIterCount_Limit = 120;
+        private int outerIterCount_Limit = 200;
+        private int no_Accept_Limit = 20;
 
         public delegate double ValueFunction(double[] data);
         ValueFunction TheValueFunction;
@@ -87,6 +88,8 @@ namespace Han_Obj_Viewer
             int totalIterCount = 0;
             int totalAccept = 0;
 
+            int no_Accept_Count = 0;
+
             for (outerIterCount = 0; outerIterCount < outerIterCount_Limit; outerIterCount++)
             {
                 //Temperature = (outerIterCount_Limit - outerIterCount) * InitTemperature / outerIterCount_Limit;
@@ -98,9 +101,12 @@ namespace Han_Obj_Viewer
 
                 int dim_i = random.Next(DataLength);
 
+                bool has_Accept = false;
                 for(innerIterCount = 0; innerIterCount < innerIterCount_Limit; innerIterCount++)
                 {
                     totalIterCount++;
+                    Record.Add(currentValue);
+
 
                     if (innerIterCount > innerIterCount_Limit)
                         break;
@@ -112,9 +118,11 @@ namespace Han_Obj_Viewer
 
                     form.SetVal(Temperature, outerIterCount, innerIterCount, totalIterCount, totalAccept, nowValue, currentMinValue);
 
-                    Record.Add(nowValue);
+                    
+
                     if (nowValue < currentMinValue)
                     {
+
                         currentValue = nowValue;
                         currentData = newData;
                         currentMinValue = nowValue;
@@ -122,6 +130,7 @@ namespace Han_Obj_Viewer
 
                         InnerAcceptCount++;
                         totalAccept++;
+                        has_Accept = true;
                         if (InnerAcceptCount > innerIterCount_Accept_Limit)
                             break;
                         if (dim_i == 7) break;
@@ -136,6 +145,9 @@ namespace Han_Obj_Viewer
                     {
                         currentValue = nowValue;
                         currentData = newData;
+                        InnerAcceptCount++;
+                        totalAccept++;
+                        has_Accept = true;
                     }
                     else
                     {
@@ -143,6 +155,7 @@ namespace Han_Obj_Viewer
                         double lambda = random.NextDouble();
                         if (probability > lambda)
                         {
+
                             currentValue = nowValue;
                             currentData = newData;
                             InnerAcceptCount++;
@@ -150,10 +163,18 @@ namespace Han_Obj_Viewer
                             if (InnerAcceptCount > innerIterCount_Accept_Limit)
                                 break;
                             if (dim_i == 7) break;
+
                         }
                     }
-                    
+
+                    if (!form.IsOpening)
+                        break;
                 }
+
+                if (!has_Accept)
+                    no_Accept_Count++;
+                if (no_Accept_Count > no_Accept_Limit)
+                    break;
                 if (!form.IsOpening)
                     break;
             }

@@ -16,6 +16,9 @@ namespace Han_Obj_Viewer
         int RefreshRate = 100;
         int TimeTick = 0;
         public bool IsOpening = true;
+
+        public bool Finished = false;
+        
         GeometryRoot geometryRoot;
 
         public Form_SA(GeometryRoot geometryRoot, int RefreshRate)
@@ -95,16 +98,16 @@ namespace Han_Obj_Viewer
 
             int NCheck = Math.Min(TWO_MESHS_sourceObj.Points.Count, TWO_MESHS_targetObj.Points.Count);
 
-            int NSamples = form_Selection.NSamples;
+            int SourceSamples = form_Selection.SourceSamples;
+            int TargetSamples = form_Selection.TargetSamples;
 
-            NSamples = Math.Min(NCheck, NSamples);
-
+            //SourceSamples = Math.Min(NCheck, SourceSamples);
 
             TWO_MESHS_sourceObj.Transform = new Transform();
             TWO_MESHS_targetObj.Transform = new Transform();
 
-            inputMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NSamples);
-            inputMat_target = TWO_MESHS_targetObj.ToSampledDataMat_WithNormal(NCheck, out inputNormalMat_target);
+            inputMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(SourceSamples);
+            inputMat_target = TWO_MESHS_targetObj.ToSampledDataMat_WithNormal(TargetSamples, out inputNormalMat_target);
 
             //checkMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NCheck);
             //checkMat_target = TWO_MESHS_targetObj.ToSampledDataMat_WithNormal(NCheck, out checkNormalMat_target);
@@ -172,10 +175,10 @@ namespace Han_Obj_Viewer
 
             for (int i = 0; i < matErr.ColumnCount; i++)
             {
-                //Err += Math.Abs(matErr[0, i] * inputNormalMat_target[0, i]
-                //    + matErr[1, i] * inputNormalMat_target[1, i]
-                //    + matErr[2, i] * inputNormalMat_target[2, i]);
-                Err += Math.Sqrt(matErr[0, i] * matErr[0, i] + matErr[1, i] * matErr[1, i] + matErr[2, i] * matErr[2, i]);
+                Err += Math.Abs(matErr[0, i] * inputNormalMat_target[0, i]
+                    + matErr[1, i] * inputNormalMat_target[1, i]
+                    + matErr[2, i] * inputNormalMat_target[2, i]);
+                //Err += Math.Sqrt(matErr[0, i] * matErr[0, i] + matErr[1, i] * matErr[1, i] + matErr[2, i] * matErr[2, i]);
             }
 
             //Err = Err / matErr.ColumnCount;
@@ -195,7 +198,7 @@ namespace Han_Obj_Viewer
             StreamWriter writer = new StreamWriter("d:/rec.txt");
             writer.Write(str);
             writer.Close();
-            MessageBox.Show(sa_Processor.currentValue.ToString());
+            //MessageBox.Show(sa_Processor.currentValue.ToString());
 
             double[] data = sa_Processor.currentData;
 
@@ -244,7 +247,18 @@ namespace Han_Obj_Viewer
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            Do();
+            if (Finished)
+            {
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            else
+            {
+                Do();
+                buttonStart.Text = "Close";
+                this.Finished = true;
+            }
+            
         }
 
 

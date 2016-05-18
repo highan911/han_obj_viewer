@@ -14,7 +14,7 @@ namespace Han_Obj_Viewer
         GeometryRoot geometryRoot;
         public string source = null;
         public string target = null;
-        public int NSamples;
+        public int SourceSamples, TargetSamples;
 
         public Form_SAMeshSelection(GeometryRoot geometryRoot)
         {
@@ -41,7 +41,8 @@ namespace Han_Obj_Viewer
         {
             if (source != null && target != null)
             {
-                this.NSamples = (int)numericNSamples.Value;
+                this.SourceSamples = (int)numericSourceSamples.Value;
+                this.TargetSamples = (int)numericTargetSamples.Value;
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
