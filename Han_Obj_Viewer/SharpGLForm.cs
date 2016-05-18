@@ -762,11 +762,14 @@ namespace Han_Obj_Viewer
         {
             Form_SA form_SA = new Form_SA(geometryRoot, 100);
             form_SA.ShowDialog();
+            if (form_SA.Finished)
+            {
 
-            TWO_MESHS_sourceObj = form_SA.TWO_MESHS_sourceObj;
-            TWO_MESHS_targetObj = form_SA.TWO_MESHS_targetObj;
+                TWO_MESHS_sourceObj = form_SA.TWO_MESHS_sourceObj;
+                TWO_MESHS_targetObj = form_SA.TWO_MESHS_targetObj;
 
-            displayMode = DisplayMode.TWO_MESHS;
+                displayMode = DisplayMode.TWO_MESHS;
+            }
 
         }
 

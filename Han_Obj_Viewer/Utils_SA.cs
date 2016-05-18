@@ -17,15 +17,15 @@ namespace Han_Obj_Viewer
         public double[] currentMinData;
         double[] RangeTops;
         double[] RangeBottoms;
-        double alphaT = 0.95;
+        double alphaT = 0.9;
         Random random = new Random();
 
 
         //TODO
-        private int innerIterCount_Limit = 100;
-        private int innerIterCount_Accept_Limit = 10;
-        private int outerIterCount_Limit = 200;
-        private int no_Accept_Limit = 20;
+        private int innerIterCount_Limit = 25;
+        private int innerIterCount_Accept_Limit = 5;
+        private int outerIterCount_Limit = 100;
+        private int no_Accept_Limit = 10;
 
         public delegate double ValueFunction(double[] data);
         ValueFunction TheValueFunction;
@@ -79,6 +79,17 @@ namespace Han_Obj_Viewer
             return newData;
         }
 
+        private double[] GetRandomData_DimSeven(int dimValue)
+        {
+            double[] newData = new double[DataLength];
+            for (int i = 0; i < DataLength; i++)
+            {
+                newData[i] = currentData[i];
+            }
+            newData[7] = dimValue;
+            return newData;
+        }
+
         public void DoSA(Form_SA form)
         {
 
@@ -95,81 +106,127 @@ namespace Han_Obj_Viewer
                 //Temperature = (outerIterCount_Limit - outerIterCount) * InitTemperature / outerIterCount_Limit;
                 Temperature = Temperature * alphaT;
                 //inner loop: same temperature
-                int innerIterCount = 0;
 
                 int InnerAcceptCount = 0;
 
-                int dim_i = random.Next(DataLength);
+                int innerIterCount = 0;
 
                 bool has_Accept = false;
-                for(innerIterCount = 0; innerIterCount < innerIterCount_Limit; innerIterCount++)
+
+                
+                //int dim_i = random.Next(DataLength);
+                bool[] visited = { false, false, false, false, false, false, false, false};
+
+                for (int j = 0; j < 8; j++)
                 {
-                    totalIterCount++;
-                    Record.Add(currentValue);
-
-
-                    if (innerIterCount > innerIterCount_Limit)
-                        break;
-                    if (!form.IsOpening)
-                        break;
-
-                    double[] newData = GetRandomData_OneDim(dim_i);
-                    double nowValue = TheValueFunction(newData);
-
-                    form.SetVal(Temperature, outerIterCount, innerIterCount, totalIterCount, totalAccept, nowValue, currentMinValue);
-
+                    int dim_i = 0;
                     
-
-                    if (nowValue < currentMinValue)
+                    while (true)
                     {
-
-                        currentValue = nowValue;
-                        currentData = newData;
-                        currentMinValue = nowValue;
-                        currentMinData = newData;
-
-                        InnerAcceptCount++;
-                        totalAccept++;
-                        has_Accept = true;
-                        if (InnerAcceptCount > innerIterCount_Accept_Limit)
-                            break;
-                        if (dim_i == 7) break;
-                        continue;
-                    }
-
-
-                    double deltaValue = nowValue - currentValue;
-
-
-                    if (deltaValue < 0)
-                    {
-                        currentValue = nowValue;
-                        currentData = newData;
-                        InnerAcceptCount++;
-                        totalAccept++;
-                        has_Accept = true;
-                    }
-                    else
-                    {
-                        double probability = Math.Exp(-(deltaValue / Temperature));
-                        double lambda = random.NextDouble();
-                        if (probability > lambda)
+                        dim_i = random.Next(8);
+                        if(!visited[dim_i])
                         {
-
-                            currentValue = nowValue;
-                            currentData = newData;
-                            InnerAcceptCount++;
-                            totalAccept++;
-                            if (InnerAcceptCount > innerIterCount_Accept_Limit)
-                                break;
-                            if (dim_i == 7) break;
-
+                            visited[dim_i] = true;
+                            break;
                         }
                     }
 
-                    if (!form.IsOpening)
-                        break;
-                }
+                    if (dim_i == 7)
+                    {
+                        for (int i = 0; i < 8; i++)
+                        {
+                            innerIterCount++;
+                            totalIterCount++;
+                            Record.Add(currentValue);
+
+                            double[] nowData = GetRandomData_DimSeven(i);
+                            double nowValue = TheValueFunction(nowData);
+
+                            form.SetVal(Temperature, outerIterCount, innerIterCount, totalIterCount, totalAccept, nowValue, currentMinValue);
+
+                            double deltaValue = nowValue - currentValue;
+                            if (deltaValue < 0)
+                            {
+                                currentValue = nowValue;
+                                currentData = nowData;
+                                if (nowValue < currentMinValue)
+                                {
+                                    currentMinValue = nowValue;
+                                    currentMinData = nowData;
+                                }
+                                InnerAcceptCount++;
+                                totalAccept++;
+                                has_Accept = true;
+                                if (InnerAcceptCount > innerIterCount_Accept_Limit)
+                                    break;
+                            }
+                            else
+                            {
+                                double probability = Math.Exp(-(deltaValue / Temperature));
+                                double lambda = random.NextDouble();
+                                if (probability > lambda)
+                                {
+                                    currentValue = nowValue;
+                                    currentData = nowData;
+                                    InnerAcceptCount++;
+                                    totalAccept++;
+                                    break;
+                                }
+                            }
+                        }
+                    }else{
+
+                        for (int i = 0; i < innerIterCount_Limit; i++)
+                        {
+                            innerIterCount++;
+                            totalIterCount++;
+                            Record.Add(currentValue);
+
+
+                            if (i > innerIterCount_Limit)
+                                break;
+                            if (!form.IsOpening)
+                                break;
+
+                            double[] nowData = GetRandomData_OneDim(dim_i);
+                            double nowValue = TheValueFunction(nowData);
+
+                            form.SetVal(Temperature, outerIterCount, innerIterCount, totalIterCount, totalAccept, nowValue, currentMinValue);
+
+                            double deltaValue = nowValue - currentValue;
+
+                            if (deltaValue < 0)
+                            {
+                                currentValue = nowValue;
+                                currentData = nowData;
+                                if (nowValue < currentMinValue)
+                                {
+                                    currentMinValue = nowValue;
+                                    currentMinData = nowData;
+                                }
+                                InnerAcceptCount++;
+                                totalAccept++;
+                                has_Accept = true;
+                                if (InnerAcceptCount > innerIterCount_Accept_Limit)
+                                    break;
+                            }
+                            else
+                            {
+                                double probability = Math.Exp(-(deltaValue / Temperature));
+                                double lambda = random.NextDouble();
+                                if (probability > lambda)
+                                {
+                                    currentValue = nowValue;
+                                    currentData = nowData;
+                                    InnerAcceptCount++;
+                                    totalAccept++;
+                                    if (InnerAcceptCount > innerIterCount_Accept_Limit)
+                                        break;
+                                }
+                            }
+                        }//inner
+                    }
+                }//middle
 
                 if (!has_Accept)
                     no_Accept_Count++;
@@ -177,8 +234,11 @@ namespace Han_Obj_Viewer
                     break;
                 if (!form.IsOpening)
                     break;
-            }
-            //form.Close();
+            }//outer
+            
         }
+
+        
+
     }
 }

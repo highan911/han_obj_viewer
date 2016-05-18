@@ -65,12 +65,12 @@ namespace Han_Obj_Viewer
         DenseMatrix PCA_InvTransMat_source, PCA_TransMat_target, PCA_InvTransMat_target;
         CellIndex cellIndex;
 
-        public void Do()
+        public bool Do()
         {
-            if (!initSA()) return;
+            if (!initSA()) return false;
 
             double MoveRange = 0.1;
-            double RotateRange = Math.PI / 12;
+            double RotateRange = Math.PI / 2;
             double ScaleTopRange = 1.25;
             double ScaleBottomRange = 0.8;
 
@@ -85,6 +85,7 @@ namespace Han_Obj_Viewer
             sa_Processor.DoSA(this);
 
             endSA();
+            return true;
         }
 
 
@@ -200,7 +201,7 @@ namespace Han_Obj_Viewer
             writer.Close();
             //MessageBox.Show(sa_Processor.currentValue.ToString());
 
-            double[] data = sa_Processor.currentData;
+            double[] data = sa_Processor.currentMinData;
 
             Transform SA_Transform = new Transform();
             SA_Transform.DoMove(data[0], data[1], data[2]);
@@ -254,9 +255,11 @@ namespace Han_Obj_Viewer
             }
             else
             {
-                Do();
-                buttonStart.Text = "Close";
-                this.Finished = true;
+                if (Do())
+                {
+                    buttonStart.Text = "Close";
+                    this.Finished = true;
+                }
             }
             
         }
