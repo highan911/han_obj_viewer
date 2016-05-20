@@ -108,7 +108,7 @@
             this.numericSourceSamples.Size = new System.Drawing.Size(118, 25);
             this.numericSourceSamples.TabIndex = 8;
             this.numericSourceSamples.Value = new decimal(new int[] {
-            100,
+            50,
             0,
             0,
             0});
@@ -134,7 +134,7 @@
             this.numericTargetSamples.Size = new System.Drawing.Size(118, 25);
             this.numericTargetSamples.TabIndex = 10;
             this.numericTargetSamples.Value = new decimal(new int[] {
-            100,
+            1000,
             0,
             0,
             0});

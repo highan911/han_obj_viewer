@@ -10,19 +10,31 @@ namespace Han_Obj_Viewer
     public class Utils_SVD
     {
 
-        public static DenseMatrix SVDGetTransMat(DenseMatrix mat_source, DenseMatrix mat_target, ref CellIndex cellIndex)
+        
+
+        public static DenseMatrix SVDGetTransMat(DenseMatrix mat_source, DenseMatrix mat_target, ref CellIndex cellIndex, out double ErrValue)
         {
             //4 * NSamples
+            int CellsCount = 8;
+
 
             DenseMatrix matP = mat_source.SubMatrix(0, 3, 0, mat_source.ColumnCount) as DenseMatrix;
 
             if (cellIndex == null)
             {
                 DenseMatrix matQ_init = mat_target.SubMatrix(0, 3, 0, mat_target.ColumnCount) as DenseMatrix;
-                cellIndex = CellIndex.GetCellIndex(matQ_init, 4);
+                cellIndex = CellIndex.GetCellIndex(matQ_init, CellsCount);
             }
 
             DenseMatrix matQ = cellIndex.DoPointMatch(matP);
+
+            DenseMatrix matErr = matQ - matP;
+            ErrValue = 0;
+            for (int i = 0; i < matErr.ColumnCount; i++)
+            {
+                ErrValue += Math.Sqrt(matErr[0, i] * matErr[0, i] + matErr[1, i] * matErr[1, i] + matErr[2, i] * matErr[2, i]);
+            }
+
 
             DenseMatrix matP_Mean = Utils_PCA.getMeanMat(matP);
             DenseMatrix matQ_Mean = Utils_PCA.getMeanMat(matQ);

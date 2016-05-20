@@ -603,151 +603,22 @@ namespace Han_Obj_Viewer
 
 
 
-        DenseMatrix inputMat_source, inputMat_target, checkMat_source, checkMat_target;
-        Transform PCATrans_source, PCATrans_target;
-        int SVDLoops;
-        DenseMatrix PCA_InvTransMat_source, PCA_TransMat_target, PCA_InvTransMat_target, SVD_TransMat;
-        List<double> errList;
-        CellIndex cellIndex, errCellIndex;
 
-        private bool initICP()
-        {
-            Form_ICPMeshSelection form_Selection = new Form_ICPMeshSelection(geometryRoot);
-            if (form_Selection.ShowDialog() != DialogResult.OK) return false;
-            TWO_MESHS_sourceObj = geometryRoot[form_Selection.source];
-            TWO_MESHS_targetObj = geometryRoot[form_Selection.target];
-
-            SVDLoops = form_Selection.SVDLoops;
-
-            int NCheck = Math.Min(TWO_MESHS_sourceObj.Points.Count, TWO_MESHS_targetObj.Points.Count);
-
-            int NSamples = form_Selection.NSamples;
-
-            NSamples = Math.Min(NCheck, NSamples);
-
-
-            TWO_MESHS_sourceObj.Transform = new Transform();
-            TWO_MESHS_targetObj.Transform = new Transform();
-
-            inputMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NSamples);
-            inputMat_target = TWO_MESHS_targetObj.ToSampledDataMat(NSamples);
-
-            checkMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NCheck);
-            checkMat_target = TWO_MESHS_targetObj.ToSampledDataMat(NCheck);
-
-            PCATrans_source = Utils_PCA.DoPCA(inputMat_source);
-            PCATrans_target = Utils_PCA.DoPCA(inputMat_target);
-
-            PCATrans_source = correctPCATransform(inputMat_source, inputMat_target, PCATrans_source, PCATrans_target);
-
-            PCA_InvTransMat_source = PCATrans_source.GetMatrix().Inverse() as DenseMatrix;
-
-            PCA_TransMat_target = PCATrans_target.GetMatrix();
-            PCA_InvTransMat_target = PCA_TransMat_target.Inverse() as DenseMatrix;
-
-            inputMat_source = PCA_InvTransMat_source * inputMat_source;
-            inputMat_target = PCA_InvTransMat_target * inputMat_target;
-
-            errList = new List<double>();
-
-            checkMat_source = PCA_InvTransMat_source * checkMat_source;
-            checkMat_target = PCA_InvTransMat_target * checkMat_target;
-
-            errCellIndex = null;
-            double err = Utils_CheckErr.CheckErr(checkMat_source, checkMat_target, ref errCellIndex);
-            errList.Add(err);
-
-            SVD_TransMat = DenseMatrix.CreateIdentity(4);
-
-            MessageBox.Show(err.ToString());
-
-            return true;
-        }
-
-        private Transform correctPCATransform(DenseMatrix inputMat_source, DenseMatrix inputMat_target, Transform PCATrans_source, Transform PCATrans_target)
-        {
-            DenseMatrix mat0 = PCATrans_source.GetMatrix();
-            List<DenseMatrix> mats = new List<DenseMatrix>();
-            double min = -1;
-            int minIndex = 0;
-
-            DenseMatrix invTrans_target = PCATrans_target.GetMatrix().Inverse() as DenseMatrix;
-            DenseMatrix invedMat_target = invTrans_target * inputMat_target;
-
-            for (int i = 0; i < 8; i++)
-            {
-                DenseMatrix mat = Utils_PCA.getMirroredTransMat(mat0, i);
-                mats.Add(mat);
-                DenseMatrix invTrans_source = mat.Inverse() as DenseMatrix;
-
-                double err = Utils_CheckErr.CheckErr(invTrans_source * inputMat_source, invedMat_target, ref cellIndex);
-                if (min < 0 || min > err)
-                {
-                    min = err;
-                    minIndex = i;
-                }
-            }
-
-            Transform newPCATrans_source = new Transform(mats[minIndex]);
-            return newPCATrans_source;
-        }
-
-        private void doSVD()
-        {
-            DenseMatrix temp_SVD_TransMat = Utils_SVD.SVDGetTransMat(inputMat_source, inputMat_target, ref cellIndex);
-            SVD_TransMat = temp_SVD_TransMat * SVD_TransMat;
-            inputMat_source = temp_SVD_TransMat * inputMat_source;
-            checkMat_source = temp_SVD_TransMat * checkMat_source;
-            double err = Utils_CheckErr.CheckErr(checkMat_source, checkMat_target, ref errCellIndex);
-            errList.Add(err);
-            TWO_MESHS_sourceObj.Transform = new Transform(PCA_TransMat_target * SVD_TransMat * PCA_InvTransMat_source);
-            MessageBox.Show(err.ToString());
-        }
-
-        private void endICP()
-        {
-
-            string msg = "Error: ";
-
-            foreach (double err in errList)
-            {
-                msg += err.ToString() + ", ";
-            }
-
-            MessageBox.Show(msg);
-
-            nextToolStripMenuItem.Visible = false;
-        }
 
         private void iCPToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!initICP()) return;
-            TWO_MESHS_sourceObj.Transform = new Transform(PCA_TransMat_target * SVD_TransMat * PCA_InvTransMat_source);
+            Form_ICP form_ICP = new Form_ICP(geometryRoot, 100);
+            form_ICP.ShowDialog();
+            if (form_ICP.Finished)
+            {
 
-            if (SVDLoops > 0)
-            {
-                nextToolStripMenuItem.Visible = true;
+                TWO_MESHS_sourceObj = form_ICP.TWO_MESHS_sourceObj;
+                TWO_MESHS_targetObj = form_ICP.TWO_MESHS_targetObj;
+
+                displayMode = DisplayMode.TWO_MESHS;
             }
-            else
-            {
-                endICP();
-            }
-            displayMode = DisplayMode.TWO_MESHS;
         }
 
-
-        private void nextToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (SVDLoops > 0)
-            {
-                doSVD();
-            }
-            else
-            {
-                endICP();
-            }
-            SVDLoops--;
-        }
 
 #endregion
 

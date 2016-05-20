@@ -36,9 +36,12 @@
             this.numericSVD = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.numericNSamples = new System.Windows.Forms.NumericUpDown();
+            this.numericSourceSamples = new System.Windows.Forms.NumericUpDown();
+            this.numericTargetSamples = new System.Windows.Forms.NumericUpDown();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericSVD)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericNSamples)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericSourceSamples)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericTargetSamples)).BeginInit();
             this.SuspendLayout();
             // 
             // comboBoxTarget
@@ -61,7 +64,7 @@
             // 
             // buttonOK
             // 
-            this.buttonOK.Location = new System.Drawing.Point(195, 195);
+            this.buttonOK.Location = new System.Drawing.Point(195, 236);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 2;
@@ -93,6 +96,11 @@
             this.numericSVD.Name = "numericSVD";
             this.numericSVD.Size = new System.Drawing.Size(166, 25);
             this.numericSVD.TabIndex = 5;
+            this.numericSVD.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
             // 
             // label3
             // 
@@ -108,33 +116,61 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(12, 150);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(79, 15);
+            this.label4.Size = new System.Drawing.Size(119, 15);
             this.label4.TabIndex = 7;
-            this.label4.Text = "N Samples";
+            this.label4.Text = "Source Samples";
             // 
-            // numericNSamples
+            // numericSourceSamples
             // 
-            this.numericNSamples.Location = new System.Drawing.Point(104, 148);
-            this.numericNSamples.Maximum = new decimal(new int[] {
+            this.numericSourceSamples.Location = new System.Drawing.Point(168, 148);
+            this.numericSourceSamples.Maximum = new decimal(new int[] {
             5000,
             0,
             0,
             0});
-            this.numericNSamples.Name = "numericNSamples";
-            this.numericNSamples.Size = new System.Drawing.Size(166, 25);
-            this.numericNSamples.TabIndex = 8;
-            this.numericNSamples.Value = new decimal(new int[] {
-            100,
+            this.numericSourceSamples.Name = "numericSourceSamples";
+            this.numericSourceSamples.Size = new System.Drawing.Size(102, 25);
+            this.numericSourceSamples.TabIndex = 8;
+            this.numericSourceSamples.Value = new decimal(new int[] {
+            50,
             0,
             0,
             0});
+            // 
+            // numericTargetSamples
+            // 
+            this.numericTargetSamples.Location = new System.Drawing.Point(168, 193);
+            this.numericTargetSamples.Maximum = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+            this.numericTargetSamples.Name = "numericTargetSamples";
+            this.numericTargetSamples.Size = new System.Drawing.Size(102, 25);
+            this.numericTargetSamples.TabIndex = 9;
+            this.numericTargetSamples.Value = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(12, 195);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(119, 15);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Target Samples";
             // 
             // Form_ICPMeshSelection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(282, 236);
-            this.Controls.Add(this.numericNSamples);
+            this.ClientSize = new System.Drawing.Size(282, 280);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.numericTargetSamples);
+            this.Controls.Add(this.numericSourceSamples);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.numericSVD);
@@ -149,7 +185,8 @@
             this.Name = "Form_ICPMeshSelection";
             this.Text = "Mesh Selection";
             ((System.ComponentModel.ISupportInitialize)(this.numericSVD)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericNSamples)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericSourceSamples)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericTargetSamples)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -165,6 +202,8 @@
         private System.Windows.Forms.NumericUpDown numericSVD;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.NumericUpDown numericNSamples;
+        private System.Windows.Forms.NumericUpDown numericSourceSamples;
+        private System.Windows.Forms.NumericUpDown numericTargetSamples;
+        private System.Windows.Forms.Label label5;
     }
 }

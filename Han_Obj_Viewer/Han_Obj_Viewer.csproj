@@ -129,6 +129,12 @@
     <Compile Include="Form_SAMeshSelection.Designer.cs">
       <DependentUpon>Form_SAMeshSelection.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form_ICP.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_ICP.Designer.cs">
+      <DependentUpon>Form_ICP.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Form_ICPMeshSelection.resx">
       <DependentUpon>Form_ICPMeshSelection.cs</DependentUpon>
     </EmbeddedResource>
@@ -156,6 +162,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form_SAMeshSelection.resx">
       <DependentUpon>Form_SAMeshSelection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_ICP.resx">
+      <DependentUpon>Form_ICP.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="packages.config" />

@@ -14,7 +14,7 @@ namespace Han_Obj_Viewer
         GeometryRoot geometryRoot;
         public string source = null;
         public string target = null;
-        public int SVDLoops, NSamples;
+        public int SVDLoops, SourceSamples, TargetSamples;
         
         public Form_ICPMeshSelection(GeometryRoot geometryRoot)
         {
@@ -30,7 +30,7 @@ namespace Han_Obj_Viewer
         public void DisableSVD()
         {
             numericSVD.Enabled = false;
-            numericNSamples.Enabled = false;
+            numericSourceSamples.Enabled = false;
         }
 
         private void comboBoxSource_SelectedIndexChanged(object sender, EventArgs e)
@@ -48,7 +48,8 @@ namespace Han_Obj_Viewer
             if (source != null && target != null)
             {
                 this.SVDLoops = (int)numericSVD.Value;
-                this.NSamples = (int)numericNSamples.Value;
+                this.SourceSamples = (int)numericSourceSamples.Value;
+                this.TargetSamples = (int)numericTargetSamples.Value;
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }

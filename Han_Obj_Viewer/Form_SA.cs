@@ -21,6 +21,14 @@ namespace Han_Obj_Viewer
         
         GeometryRoot geometryRoot;
 
+
+        public GeometryObject TWO_MESHS_sourceObj;
+        public GeometryObject TWO_MESHS_targetObj;
+
+        int StartTime;
+        int EndTime;
+
+
         public Form_SA(GeometryRoot geometryRoot, int RefreshRate)
         {
             this.geometryRoot = geometryRoot;
@@ -57,13 +65,13 @@ namespace Han_Obj_Viewer
         SA_Processor sa_Processor;
         DenseMatrix inputNormalMat_target;
 
-        public GeometryObject TWO_MESHS_sourceObj;
-        public GeometryObject TWO_MESHS_targetObj;
 
         DenseMatrix inputMat_source, inputMat_target;
         Transform PCATrans_source, PCATrans_target;
         DenseMatrix PCA_InvTransMat_source, PCA_TransMat_target, PCA_InvTransMat_target;
         CellIndex cellIndex;
+
+        int CellsCount = 8;
 
         public bool Do()
         {
@@ -80,29 +88,27 @@ namespace Han_Obj_Viewer
 
             double initTemperature = 5;
 
+
+            StartTime = System.Environment.TickCount;
             sa_Processor = new SA_Processor(SA_CalculateErr, initTemperature, initData, initTops, initBottoms);
 
             sa_Processor.DoSA(this);
 
+            EndTime = System.Environment.TickCount;
             endSA();
             return true;
         }
 
-
+        int SourceSamples, TargetSamples;
         private bool initSA()
         {
             Form_SAMeshSelection form_Selection = new Form_SAMeshSelection(geometryRoot);
-            //form_Selection.DisableSVD();
             if (form_Selection.ShowDialog() != DialogResult.OK) return false;
             TWO_MESHS_sourceObj = geometryRoot[form_Selection.source];
             TWO_MESHS_targetObj = geometryRoot[form_Selection.target];
 
-            int NCheck = Math.Min(TWO_MESHS_sourceObj.Points.Count, TWO_MESHS_targetObj.Points.Count);
-
-            int SourceSamples = form_Selection.SourceSamples;
-            int TargetSamples = form_Selection.TargetSamples;
-
-            //SourceSamples = Math.Min(NCheck, SourceSamples);
+            SourceSamples = form_Selection.SourceSamples;
+            TargetSamples = form_Selection.TargetSamples;
 
             TWO_MESHS_sourceObj.Transform = new Transform();
             TWO_MESHS_targetObj.Transform = new Transform();
@@ -110,13 +116,10 @@ namespace Han_Obj_Viewer
             inputMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(SourceSamples);
             inputMat_target = TWO_MESHS_targetObj.ToSampledDataMat_WithNormal(TargetSamples, out inputNormalMat_target);
 
-            //checkMat_source = TWO_MESHS_sourceObj.ToSampledDataMat(NCheck);
-            //checkMat_target = TWO_MESHS_targetObj.ToSampledDataMat_WithNormal(NCheck, out checkNormalMat_target);
-
             PCATrans_source = Utils_PCA.DoPCA(inputMat_source);
             PCATrans_target = Utils_PCA.DoPCA(inputMat_target);
 
-            PCATrans_source = correctPCATransform(inputMat_source, inputMat_target, PCATrans_source, PCATrans_target);
+            //PCATrans_source = correctPCATransform(inputMat_source, inputMat_target, PCATrans_source, PCATrans_target);
 
             PCA_InvTransMat_source = PCATrans_source.GetMatrix().Inverse() as DenseMatrix;
 
@@ -127,20 +130,6 @@ namespace Han_Obj_Viewer
             inputMat_target = PCA_InvTransMat_target * inputMat_target;
 
             inputNormalMat_target = PCATrans_target.ToRotationMatrix().Inverse() * inputNormalMat_target as DenseMatrix;
-            //checkNormalMat_target = PCATrans_target.ToRotationMatrix().Inverse() * checkNormalMat_target as DenseMatrix;
-
-            //checkMat_source = PCA_InvTransMat_source * checkMat_source;
-            //checkMat_target = PCA_InvTransMat_target * checkMat_target;
-
-            //errList = new List<double>();
-            //errCellIndex = null;
-            //double err = Utils_CheckErr.CheckErr(checkMat_source, checkMat_target, ref errCellIndex);
-            //errList.Add(err);
-
-            //SVD_TransMat = DenseMatrix.CreateIdentity(4);
-
-            //MessageBox.Show(err.ToString());
-
             return true;
         }
 
@@ -166,7 +155,7 @@ namespace Han_Obj_Viewer
             if (cellIndex == null)
             {
                 DenseMatrix matQ_init = inputMat_target.SubMatrix(0, 3, 0, inputMat_target.ColumnCount) as DenseMatrix;
-                cellIndex = CellIndex.GetCellIndex(matQ_init, 8);
+                cellIndex = CellIndex.GetCellIndex(matQ_init, CellsCount);
             }
 
             DenseMatrix matQ = cellIndex.DoPointMatch(matP);
@@ -176,13 +165,8 @@ namespace Han_Obj_Viewer
 
             for (int i = 0; i < matErr.ColumnCount; i++)
             {
-                Err += Math.Abs(matErr[0, i] * inputNormalMat_target[0, i]
-                    + matErr[1, i] * inputNormalMat_target[1, i]
-                    + matErr[2, i] * inputNormalMat_target[2, i]);
-                //Err += Math.Sqrt(matErr[0, i] * matErr[0, i] + matErr[1, i] * matErr[1, i] + matErr[2, i] * matErr[2, i]);
+                Err += Math.Sqrt(matErr[0, i] * matErr[0, i] + matErr[1, i] * matErr[1, i] + matErr[2, i] * matErr[2, i]);
             }
-
-            //Err = Err / matErr.ColumnCount;
 
             double absScale = Math.Abs(data[6]);
             Err = Err / absScale;
@@ -191,15 +175,6 @@ namespace Han_Obj_Viewer
 
         private void endSA()
         {
-            string str = "";
-            foreach (double rec in sa_Processor.Record)
-            {
-                str += rec.ToString() + "\n";
-            }
-            StreamWriter writer = new StreamWriter("d:/rec.txt");
-            writer.Write(str);
-            writer.Close();
-            //MessageBox.Show(sa_Processor.currentValue.ToString());
 
             double[] data = sa_Processor.currentMinData;
 
@@ -211,35 +186,57 @@ namespace Han_Obj_Viewer
             SA_Transform.DoScale(data[6]);
 
             TWO_MESHS_sourceObj.Transform = new Transform(PCA_TransMat_target * SA_Transform.GetMatrix() * PCA_InvTransMat_source);
-        }
 
-        private Transform correctPCATransform(DenseMatrix inputMat_source, DenseMatrix inputMat_target, Transform PCATrans_source, Transform PCATrans_target)
-        {
-            DenseMatrix mat0 = PCATrans_source.GetMatrix();
-            List<DenseMatrix> mats = new List<DenseMatrix>();
-            double min = -1;
-            int minIndex = 0;
+            DenseMatrix checkSourceMat = PCA_TransMat_target * SA_Transform.GetMatrix() * PCA_InvTransMat_source * TWO_MESHS_sourceObj.ToDataMat();
+            DenseMatrix checkSourceMat_PCA = PCA_TransMat_target * PCA_InvTransMat_source * TWO_MESHS_sourceObj.ToDataMat();
 
-            DenseMatrix invTrans_target = PCATrans_target.GetMatrix().Inverse() as DenseMatrix;
-            DenseMatrix invedMat_target = invTrans_target * inputMat_target;
+            int timeDelta = EndTime - StartTime;
+            double err_pca = Utils_CheckErr.CheckErr(checkSourceMat_PCA, TWO_MESHS_targetObj.ToDataMat());
+            double err = Utils_CheckErr.CheckErr(checkSourceMat, TWO_MESHS_targetObj.ToDataMat());
+            
 
-            for (int i = 0; i < 8; i++)
+            string str = "Time: " + timeDelta.ToString() + "\n";
+            str += "Err_PCA: " + err_pca.ToString() + "\n";
+            str += "Err: " + err.ToString() + "\n";
+            foreach (double rec in sa_Processor.Record)
             {
-                DenseMatrix mat = Utils_PCA.getMirroredTransMat(mat0, i);
-                mats.Add(mat);
-                DenseMatrix invTrans_source = mat.Inverse() as DenseMatrix;
-
-                double err = Utils_CheckErr.CheckErr(invTrans_source * inputMat_source, invedMat_target, ref cellIndex);
-                if (min < 0 || min > err)
-                {
-                    min = err;
-                    minIndex = i;
-                }
+                str += rec.ToString() + "\n";
             }
+            StreamWriter writer = new StreamWriter("d:/rec_sa"
+                + TargetSamples.ToString() + TargetSamples.ToString() + ".txt");
+            writer.Write(str);
+            writer.Close();
 
-            Transform newPCATrans_source = new Transform(mats[minIndex]);
-            return newPCATrans_source;
+
         }
+
+        //private Transform correctPCATransform(DenseMatrix inputMat_source, DenseMatrix inputMat_target, Transform PCATrans_source, Transform PCATrans_target)
+        //{
+        //    DenseMatrix mat0 = PCATrans_source.GetMatrix();
+        //    List<DenseMatrix> mats = new List<DenseMatrix>();
+        //    double min = -1;
+        //    int minIndex = 0;
+
+        //    DenseMatrix invTrans_target = PCATrans_target.GetMatrix().Inverse() as DenseMatrix;
+        //    DenseMatrix invedMat_target = invTrans_target * inputMat_target;
+
+        //    for (int i = 0; i < 8; i++)
+        //    {
+        //        DenseMatrix mat = Utils_PCA.getMirroredTransMat(mat0, i);
+        //        mats.Add(mat);
+        //        DenseMatrix invTrans_source = mat.Inverse() as DenseMatrix;
+
+        //        double err = Utils_CheckErr.CheckErr(invTrans_source * inputMat_source, invedMat_target, ref cellIndex);
+        //        if (min < 0 || min > err)
+        //        {
+        //            min = err;
+        //            minIndex = i;
+        //        }
+        //    }
+
+        //    Transform newPCATrans_source = new Transform(mats[minIndex]);
+        //    return newPCATrans_source;
+        //}
 
         private void Form_SA_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -263,10 +260,6 @@ namespace Han_Obj_Viewer
             }
             
         }
-
-
-
-
 
     }
 }
