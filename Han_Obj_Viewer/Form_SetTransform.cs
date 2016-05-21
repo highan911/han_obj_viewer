@@ -25,8 +25,8 @@ namespace Han_Obj_Viewer
             Rz = Math.PI * (double)numericRz.Value / 180;
             S = (double)numericS.Value;
             X = (double)numericX.Value;
-            Y = (double)numericX.Value;
-            Z = (double)numericX.Value;
+            Y = (double)numericY.Value;
+            Z = (double)numericZ.Value;
             Transform = new Transform();
             Transform.DoScale(S);
             Transform.DoRotateX(Rx);

@@ -128,26 +128,25 @@ namespace Han_Obj_Viewer
             return index;
         }
 
-        public static DenseMatrix getMirroredTransMat(DenseMatrix mat, int i)
+        public static DenseMatrix getMirrorTransMat(int i)
         {
-            int a = i / 4;
-            i -= 4 * a;
-            int b = i / 2;
-            i -= 2 * b;
-            int c = i;
 
-            a = a * 2 - 1;
-            b = b * 2 - 1;
-            c = c * 2 - 1;
-
+            int[] tokens = new int[3];
+            int max = 8;
+            for (int j = 0; j < 3; j++)
+            {
+                max = max / 2;
+                tokens[j] = 2 * (i / max) - 1;
+                i -= max * tokens[j];
+            }
 
             DenseMatrix T = DenseMatrix.CreateIdentity(4);
 
-            T[0, 0] = a;
-            T[1, 1] = b;
-            T[2, 2] = c;
+            T[0, 0] = tokens[0];
+            T[1, 1] = tokens[1];
+            T[2, 2] = tokens[2];
 
-            return mat * T;
+            return T;
         }
     }
 }

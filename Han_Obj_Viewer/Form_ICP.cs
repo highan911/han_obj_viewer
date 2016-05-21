@@ -21,8 +21,8 @@ namespace Han_Obj_Viewer
         
         GeometryRoot geometryRoot;
 
-        public GeometryObject TWO_MESHS_sourceObj;
-        public GeometryObject TWO_MESHS_targetObj;
+        public GeometryObject TWO_MESHS_sourceObj = null;
+        public GeometryObject TWO_MESHS_targetObj = null;
 
         int StartTime;
         int EndTime;
@@ -65,19 +65,18 @@ namespace Han_Obj_Viewer
 
         private bool initICP()
         {
-            Form_ICPMeshSelection form_Selection = new Form_ICPMeshSelection(geometryRoot);
-            if (form_Selection.ShowDialog() != DialogResult.OK) return false;
-            TWO_MESHS_sourceObj = geometryRoot[form_Selection.source];
-            TWO_MESHS_targetObj = geometryRoot[form_Selection.target];
+            if (TWO_MESHS_sourceObj == null || TWO_MESHS_targetObj == null)
+            {
+                Form_ICPMeshSelection form_Selection = new Form_ICPMeshSelection(geometryRoot);
+                if (form_Selection.ShowDialog() != DialogResult.OK) return false;
+                TWO_MESHS_sourceObj = geometryRoot[form_Selection.source];
+                TWO_MESHS_targetObj = geometryRoot[form_Selection.target];
 
-            SVDLoops = form_Selection.SVDLoops;
+                SVDLoops = form_Selection.SVDLoops;
 
-            //int NCheck = Math.Min(TWO_MESHS_sourceObj.Points.Count, TWO_MESHS_targetObj.Points.Count);
-
-            SourceSamples = form_Selection.SourceSamples;
-            TargetSamples = form_Selection.TargetSamples;
-
-            //SourceSamples = Math.Min(NCheck, NSamples);
+                SourceSamples = form_Selection.SourceSamples;
+                TargetSamples = form_Selection.TargetSamples;
+            }
 
 
             TWO_MESHS_sourceObj.Transform = new Transform();
@@ -138,7 +137,7 @@ namespace Han_Obj_Viewer
         //}
 
 
-        private void endICP()
+        private void endICP(int iLoop)
         {
 
             TWO_MESHS_sourceObj.Transform = new Transform(PCA_TransMat_target * SVD_TransMat * PCA_InvTransMat_source);
@@ -158,8 +157,8 @@ namespace Han_Obj_Viewer
             {
                 str += rec.ToString() + "\n";
             }
-            StreamWriter writer = new StreamWriter("d:/rec_icp"
-                + TargetSamples.ToString() + TargetSamples.ToString() + ".txt");
+            StreamWriter writer = new StreamWriter("d:/rec_icp_"
+                + TargetSamples.ToString() + "_" + SourceSamples.ToString() + "_" + iLoop.ToString() + ".txt");
             writer.Write(str);
             writer.Close();
         }
@@ -169,7 +168,7 @@ namespace Han_Obj_Viewer
         int SameValLoops = 0;
         int SameValLimit = 3;
 
-        public bool Do()
+        public bool Do(int iLoop)
         {
             if (!initICP()) return false;
             StartTime = System.Environment.TickCount;
@@ -202,7 +201,7 @@ namespace Han_Obj_Viewer
 
             }
             EndTime = System.Environment.TickCount;
-            endICP();
+            endICP(iLoop);
             return true;
         }
 
@@ -222,11 +221,17 @@ namespace Han_Obj_Viewer
             }
             else
             {
-                if (Do())
+                for (int i = 1; i <= 10; i++)
                 {
-                    buttonStart.Text = "Close";
-                    this.Finished = true;
+                    Do(i);
                 }
+                buttonStart.Text = "Close";
+                this.Finished = true;
+                //if (Do())
+                //{
+                //    buttonStart.Text = "Close";
+                //    this.Finished = true;
+                //}
             }
             
         }

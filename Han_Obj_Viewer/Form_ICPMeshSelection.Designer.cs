@@ -132,7 +132,7 @@
             this.numericSourceSamples.Size = new System.Drawing.Size(102, 25);
             this.numericSourceSamples.TabIndex = 8;
             this.numericSourceSamples.Value = new decimal(new int[] {
-            50,
+            400,
             0,
             0,
             0});

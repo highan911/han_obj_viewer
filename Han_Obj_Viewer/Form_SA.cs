@@ -22,8 +22,8 @@ namespace Han_Obj_Viewer
         GeometryRoot geometryRoot;
 
 
-        public GeometryObject TWO_MESHS_sourceObj;
-        public GeometryObject TWO_MESHS_targetObj;
+        public GeometryObject TWO_MESHS_sourceObj = null;
+        public GeometryObject TWO_MESHS_targetObj = null;
 
         int StartTime;
         int EndTime;
@@ -73,12 +73,12 @@ namespace Han_Obj_Viewer
 
         int CellsCount = 8;
 
-        public bool Do()
+        public bool Do(int iloop)
         {
             if (!initSA()) return false;
 
             double MoveRange = 0.1;
-            double RotateRange = Math.PI / 2;
+            double RotateRange = Math.PI / 12;
             double ScaleTopRange = 1.25;
             double ScaleBottomRange = 0.8;
 
@@ -95,20 +95,23 @@ namespace Han_Obj_Viewer
             sa_Processor.DoSA(this);
 
             EndTime = System.Environment.TickCount;
-            endSA();
+            endSA(iloop);
             return true;
         }
 
         int SourceSamples, TargetSamples;
         private bool initSA()
         {
-            Form_SAMeshSelection form_Selection = new Form_SAMeshSelection(geometryRoot);
-            if (form_Selection.ShowDialog() != DialogResult.OK) return false;
-            TWO_MESHS_sourceObj = geometryRoot[form_Selection.source];
-            TWO_MESHS_targetObj = geometryRoot[form_Selection.target];
+            if (TWO_MESHS_sourceObj == null || TWO_MESHS_targetObj == null)
+            {
+                Form_SAMeshSelection form_Selection = new Form_SAMeshSelection(geometryRoot);
+                if (form_Selection.ShowDialog() != DialogResult.OK) return false;
+                TWO_MESHS_sourceObj = geometryRoot[form_Selection.source];
+                TWO_MESHS_targetObj = geometryRoot[form_Selection.target];
 
-            SourceSamples = form_Selection.SourceSamples;
-            TargetSamples = form_Selection.TargetSamples;
+                SourceSamples = form_Selection.SourceSamples;
+                TargetSamples = form_Selection.TargetSamples;
+            }
 
             TWO_MESHS_sourceObj.Transform = new Transform();
             TWO_MESHS_targetObj.Transform = new Transform();
@@ -137,19 +140,22 @@ namespace Han_Obj_Viewer
 
         public double SA_CalculateErr(double[] data)
         {
+            DenseMatrix mirrorMat = Utils_PCA.getMirrorTransMat(Convert.ToInt32(data[7]));
+
+
             Transform transform = new Transform();
             transform.DoMove(data[0], data[1], data[2]);
             transform.DoRotateX(data[3]);
             transform.DoRotateY(data[4]);
             transform.DoRotateZ(data[5]);
             transform.DoScale(data[6]);
-            DenseMatrix transformMat = transform.GetMatrix();
-            Utils_PCA.getMirroredTransMat(transformMat, Convert.ToInt32(data[7]));
-            transform.SetMatrix(transformMat);
+
+            DenseMatrix transformMat = transform.GetMatrix() * mirrorMat;
+
 
             DenseMatrix matP_init = new DenseMatrix(4, inputMat_source.ColumnCount);
             inputMat_source.CopyTo(matP_init);
-            matP_init = transform.GetMatrix() * matP_init;
+            matP_init = transformMat * matP_init;
             DenseMatrix matP = matP_init.SubMatrix(0, 3, 0, matP_init.ColumnCount) as DenseMatrix;
 
             if (cellIndex == null)
@@ -173,21 +179,26 @@ namespace Han_Obj_Viewer
             return Err;
         }
 
-        private void endSA()
+        private void endSA(int iloop)
         {
 
             double[] data = sa_Processor.currentMinData;
 
-            Transform SA_Transform = new Transform();
-            SA_Transform.DoMove(data[0], data[1], data[2]);
-            SA_Transform.DoRotateX(data[3]);
-            SA_Transform.DoRotateY(data[4]);
-            SA_Transform.DoRotateZ(data[5]);
-            SA_Transform.DoScale(data[6]);
+            DenseMatrix mirrorMat = Utils_PCA.getMirrorTransMat(Convert.ToInt32(data[7]));
 
-            TWO_MESHS_sourceObj.Transform = new Transform(PCA_TransMat_target * SA_Transform.GetMatrix() * PCA_InvTransMat_source);
+            Transform transform = new Transform();
+            transform.DoMove(data[0], data[1], data[2]);
+            transform.DoRotateX(data[3]);
+            transform.DoRotateY(data[4]);
+            transform.DoRotateZ(data[5]);
+            transform.DoScale(data[6]);
 
-            DenseMatrix checkSourceMat = PCA_TransMat_target * SA_Transform.GetMatrix() * PCA_InvTransMat_source * TWO_MESHS_sourceObj.ToDataMat();
+            DenseMatrix transformMat = transform.GetMatrix() * mirrorMat;
+
+
+            TWO_MESHS_sourceObj.Transform = new Transform(PCA_TransMat_target * transformMat * PCA_InvTransMat_source);
+
+            DenseMatrix checkSourceMat = PCA_TransMat_target * transformMat * PCA_InvTransMat_source * TWO_MESHS_sourceObj.ToDataMat();
             DenseMatrix checkSourceMat_PCA = PCA_TransMat_target * PCA_InvTransMat_source * TWO_MESHS_sourceObj.ToDataMat();
 
             int timeDelta = EndTime - StartTime;
@@ -202,8 +213,8 @@ namespace Han_Obj_Viewer
             {
                 str += rec.ToString() + "\n";
             }
-            StreamWriter writer = new StreamWriter("d:/rec_sa"
-                + TargetSamples.ToString() + TargetSamples.ToString() + ".txt");
+            StreamWriter writer = new StreamWriter("d:/rec_sa_"
+                + TargetSamples.ToString() + "_" + SourceSamples.ToString() + "_" + iloop.ToString() + ".txt");
             writer.Write(str);
             writer.Close();
 
@@ -252,11 +263,17 @@ namespace Han_Obj_Viewer
             }
             else
             {
-                if (Do())
+                for (int i = 1; i <= 1; i++)
                 {
-                    buttonStart.Text = "Close";
-                    this.Finished = true;
+                    Do(i);
                 }
+                buttonStart.Text = "Close";
+                this.Finished = true;
+                //if (Do())
+                //{
+                //    buttonStart.Text = "Close";
+                //    this.Finished = true;
+                //}
             }
             
         }
