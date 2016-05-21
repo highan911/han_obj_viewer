@@ -12,9 +12,10 @@ namespace Han_Obj_Viewer
         double InitTemperature;
         int DataLength;
         public double currentValue;
-        //public double[] currentData;
+        public double[] currentData;
 
-        public double[][] currentData_byMirrors;
+        public double[][] currentMinData_byMirrors;
+        public double[] currentMinValue_byMirrors;
 
         public double currentMinValue;
         public double[] currentMinData;
@@ -25,17 +26,20 @@ namespace Han_Obj_Viewer
 
 
         //TODO
-        //private int innerIterCount_Limit = 25;
-        //private int innerIterCount_Accept_Limit = 10;
-
-        private int innerIterCount_Limit = 100;
+        private int innerIterCount_Limit = 20;
         private int innerIterCount_Accept_Limit = 20;
+
+        //private int innerIterCount_Limit = 100;
+        //private int innerIterCount_Accept_Limit = 20;
+
+        private int middleIterCount_Limit = 10;
+
 
         private int outerIterCount_Limit = 100;
         private int no_Accept_Limit = 5;
 
         int MirrorsAcceptRate_Init = 1;
-        int MirrorsChangeRate = 1;
+        //int MirrorsChangeRate = 1;
 
         public delegate double ValueFunction(double[] data);
         ValueFunction TheValueFunction;
@@ -55,17 +59,22 @@ namespace Han_Obj_Viewer
             this.RangeBottoms = RangeBottoms;
             DataLength = initData.Length;
 
-            this.currentData_byMirrors = new double[8][];//8 mirrors
+            this.currentValue = TheValueFunction(initData);
+            this.currentMinValue = this.currentValue;
+
+            this.currentMinData_byMirrors = new double[8][];//8 mirrors
+            this.currentMinValue_byMirrors = new double[8];
             for (int i = 0; i < 8; i++)
             {
                 double[] initData_byMirrors = new double[DataLength];
                 initData.CopyTo(initData_byMirrors, 0);
                 initData_byMirrors[DataLength - 1] = i;
-                currentData_byMirrors[i] = initData_byMirrors;
+                this.currentMinData_byMirrors[i] = initData_byMirrors;
+                this.currentMinValue_byMirrors[i] = this.currentValue;
             }
 
-            this.currentValue = TheValueFunction(initData);
-            this.currentMinValue = this.currentValue;
+
+
 
             Record = new List<double>();
             Record.Add(this.currentValue);
@@ -90,39 +99,38 @@ namespace Han_Obj_Viewer
 
         private void ChangeCurrentMirror(ref int currentMirror, int[] MirrorsAcceptRate)
         {
-            //int random_code = random.Next(MirrorsAcceptRate.Sum());
-            //for (int i = 0; i < 8; i++)
-            //{
-            //    random_code -= MirrorsAcceptRate[i];
-            //    if (random_code < 0)
-            //    {
-            //        currentMirror = i;
-            //        break;
-            //    }
-            //}
-            double MirrorsAcceptRate_Sum = 0;
+            int random_code = random.Next(MirrorsAcceptRate.Sum());
             for (int i = 0; i < 8; i++)
             {
-                MirrorsAcceptRate_Sum += Math.Log(MirrorsAcceptRate[i] + 1);
-            }
-            double random_code = random.NextDouble() * MirrorsAcceptRate_Sum;
-            for (int i = 0; i < 8; i++)
-            {
-                random_code -= Math.Log(MirrorsAcceptRate[i] + 1);
+                random_code -= MirrorsAcceptRate[i];
                 if (random_code < 0)
                 {
                     currentMirror = i;
                     break;
                 }
             }
-            //double[] newData = new double[DataLength];
-
-            //for (int i = 0; i < DataLength - 1; i++)
+            //double MirrorsAcceptRate_Sum = 0;
+            //for (int i = 0; i < 8; i++)
             //{
-            //    newData[i] = currentData_byMirrors[currentMirror][i];
+            //    MirrorsAcceptRate_Sum += Math.Log(MirrorsAcceptRate[i] + 1);
             //}
-            //newData[DataLength - 1] = currentMirror;
-            //return newData;
+            //double random_code = random.NextDouble() * MirrorsAcceptRate_Sum;
+            //for (int i = 0; i < 8; i++)
+            //{
+            //    random_code -= Math.Log(MirrorsAcceptRate[i] + 1);
+            //    if (random_code < 0)
+            //    {
+            //        currentMirror = i;
+            //        break;
+            //    }
+            //}
+            currentData = new double[DataLength];
+            for (int i = 0; i < DataLength; i++)
+            {
+                currentData[i] = currentMinData_byMirrors[currentMirror][i];
+            }
+            currentValue = currentMinValue_byMirrors[currentMirror];
+
         }
 
         private double[] GetRandomData_OneDim(int dim_i, int currentMirror)
@@ -131,7 +139,8 @@ namespace Han_Obj_Viewer
 
             for (int i = 0; i < DataLength; i++)
             {
-                newData[i] = currentData_byMirrors[currentMirror][i];
+                //newData[i] = currentData_byMirrors[currentMirror][i];
+                newData[i] = currentData[i];
             }
             double sample = random.NextDouble();
             newData[dim_i] = RangeBottoms[dim_i] + sample * (RangeTops[dim_i] - RangeBottoms[dim_i]);
@@ -343,67 +352,91 @@ namespace Han_Obj_Viewer
                 //int dim_i = random.Next(DataLength);
                 //bool[] dim_visited = { false, false, false, false, false, false, false, false };
 
-                for (innerIterCount = 0; innerIterCount < innerIterCount_Limit; innerIterCount++)
+                for (int middleIterCount = 0; middleIterCount < middleIterCount_Limit; middleIterCount++)
                 {
+                    //int dim_i = 0;
 
-                    if (innerIterCount > innerIterCount_Limit)
-                        break;
-                    if (!form.IsOpening)
-                        break;
-
-                    totalIterCount++;
-                    Record.Add(currentValue);
-
-                    double[] nowData = null;
-                    if (random.Next(MirrorsChangeRate) == 0)
-                    {
-                        //nowData = ChangeCurrentMirror(ref currentMirror, MirrorsAcceptRate);//change mirror
-                        ChangeCurrentMirror(ref currentMirror, MirrorsAcceptRate);//change mirror
-                    }
-                    //else
+                    //while (true)
                     //{
-                        int dim_i = random.Next(DataLength - 1);
-                        nowData = GetRandomData_OneDim(dim_i, currentMirror);//current Mirror may be changed inside
+                    //    dim_i = random.Next(7);
+                    //    if (!dim_visited[dim_i])
+                    //    {
+                    //        dim_visited[dim_i] = true;
+                    //        break;
+                    //    }
                     //}
+                    
 
-                    double nowValue = TheValueFunction(nowData);
+                    //if (random.Next(MirrorsChangeRate) == 0)
+                    //{
+                    //    ChangeCurrentMirror(ref currentMirror, MirrorsAcceptRate);//change mirror
+                    //}
+                    ChangeCurrentMirror(ref currentMirror, MirrorsAcceptRate);//change mirror
 
-                    form.SetVal(Temperature, outerIterCount, innerIterCount, totalIterCount, totalAccept, nowValue, currentMinValue);
-
-                    double deltaValue = nowValue - currentValue;
-
-                    if (deltaValue < 0)
+                    for (innerIterCount = 0; innerIterCount < innerIterCount_Limit; innerIterCount++)
                     {
-                        currentValue = nowValue;
-                        currentData_byMirrors[currentMirror] = nowData;
-                        if (nowValue < currentMinValue)
-                        {
-                            currentMinValue = nowValue;
-                            currentMinData = nowData;
-                        }
-                        MirrorsAcceptRate[currentMirror]++;
 
-                        InnerAcceptCount++;
-                        totalAccept++;
-                        has_Accept = true;
-                        if (InnerAcceptCount > innerIterCount_Accept_Limit)
+                        if (innerIterCount > innerIterCount_Limit)
                             break;
-                    }
-                    else
-                    {
-                        double probability = Math.Exp(-(deltaValue / Temperature));
-                        double lambda = random.NextDouble();
-                        if (probability > lambda)
+                        if (!form.IsOpening)
+                            break;
+
+                        totalIterCount++;
+                        Record.Add(currentValue);
+
+                        int dim_i = random.Next(7);
+                        double[] nowData = GetRandomData_OneDim(dim_i, currentMirror);
+
+                        double nowValue = TheValueFunction(nowData);
+
+                        form.SetVal(Temperature, outerIterCount, innerIterCount, totalIterCount, totalAccept, nowValue, currentMinValue);
+
+                        double deltaValue = nowValue - currentValue;
+
+                        if (deltaValue < 0)
                         {
                             currentValue = nowValue;
-                            currentData_byMirrors[currentMirror] = nowData;
+                            //currentData_byMirrors[currentMirror] = nowData;
+                            currentData = nowData;
+
+                            if (nowValue < currentMinValue)
+                            {
+                                currentMinValue = nowValue;
+                                currentMinData = nowData;
+                                currentMinData_byMirrors[currentMirror] = nowData;
+
+                                MirrorsAcceptRate[currentMirror]++;
+                            }
+
+                            if (nowValue < currentMinValue_byMirrors[currentMirror])
+                            {
+                                currentMinValue_byMirrors[currentMirror] = nowValue;
+                            }
+                            
+
                             InnerAcceptCount++;
                             totalAccept++;
+                            has_Accept = true;
                             if (InnerAcceptCount > innerIterCount_Accept_Limit)
                                 break;
                         }
-                    }
-                }//inner
+                        else
+                        {
+                            double probability = Math.Exp(-(deltaValue / Temperature));
+                            double lambda = random.NextDouble();
+                            if (probability > lambda)
+                            {
+                                currentValue = nowValue;
+                                //currentData_byMirrors[currentMirror] = nowData;
+                                currentData = nowData;
+                                InnerAcceptCount++;
+                                totalAccept++;
+                                if (InnerAcceptCount > innerIterCount_Accept_Limit)
+                                    break;
+                            }
+                        }
+                    }//inner
+                }//middle
 
                 if (!has_Accept)
                     no_Accept_Count++;
