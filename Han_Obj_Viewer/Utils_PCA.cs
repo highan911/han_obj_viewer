@@ -137,7 +137,7 @@ namespace Han_Obj_Viewer
             {
                 max = max / 2;
                 tokens[j] = 2 * (i / max) - 1;
-                i -= max * tokens[j];
+                i -= max * (i / max);
             }
 
             DenseMatrix T = DenseMatrix.CreateIdentity(4);

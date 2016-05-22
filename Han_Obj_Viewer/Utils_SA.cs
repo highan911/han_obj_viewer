@@ -15,7 +15,7 @@ namespace Han_Obj_Viewer
         public double[] currentData;
 
         public double[][] currentMinData_byMirrors;
-        public double[] currentMinValue_byMirrors;
+        //public double[] currentMinValue_byMirrors;
 
         public double currentMinValue;
         public double[] currentMinData;
@@ -38,7 +38,7 @@ namespace Han_Obj_Viewer
         private int outerIterCount_Limit = 100;
         private int no_Accept_Limit = 5;
 
-        int MirrorsAcceptRate_Init = 1;
+        int MirrorsAcceptRate_Init = 2;
         //int MirrorsChangeRate = 1;
 
         public delegate double ValueFunction(double[] data);
@@ -63,14 +63,14 @@ namespace Han_Obj_Viewer
             this.currentMinValue = this.currentValue;
 
             this.currentMinData_byMirrors = new double[8][];//8 mirrors
-            this.currentMinValue_byMirrors = new double[8];
+            //this.currentMinValue_byMirrors = new double[8];
             for (int i = 0; i < 8; i++)
             {
                 double[] initData_byMirrors = new double[DataLength];
                 initData.CopyTo(initData_byMirrors, 0);
                 initData_byMirrors[DataLength - 1] = i;
                 this.currentMinData_byMirrors[i] = initData_byMirrors;
-                this.currentMinValue_byMirrors[i] = this.currentValue;
+                //this.currentMinValue_byMirrors[i] = this.currentValue;
             }
 
 
@@ -99,37 +99,37 @@ namespace Han_Obj_Viewer
 
         private void ChangeCurrentMirror(ref int currentMirror, int[] MirrorsAcceptRate)
         {
-            int random_code = random.Next(MirrorsAcceptRate.Sum());
-            for (int i = 0; i < 8; i++)
-            {
-                random_code -= MirrorsAcceptRate[i];
-                if (random_code < 0)
-                {
-                    currentMirror = i;
-                    break;
-                }
-            }
-            //double MirrorsAcceptRate_Sum = 0;
+            //int random_code = random.Next(MirrorsAcceptRate.Sum());
             //for (int i = 0; i < 8; i++)
             //{
-            //    MirrorsAcceptRate_Sum += Math.Log(MirrorsAcceptRate[i] + 1);
-            //}
-            //double random_code = random.NextDouble() * MirrorsAcceptRate_Sum;
-            //for (int i = 0; i < 8; i++)
-            //{
-            //    random_code -= Math.Log(MirrorsAcceptRate[i] + 1);
+            //    random_code -= MirrorsAcceptRate[i];
             //    if (random_code < 0)
             //    {
             //        currentMirror = i;
             //        break;
             //    }
             //}
+            double MirrorsAcceptRate_Sum = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                MirrorsAcceptRate_Sum += Math.Log(MirrorsAcceptRate[i]);
+            }
+            double random_code = random.NextDouble() * MirrorsAcceptRate_Sum;
+            for (int i = 0; i < 8; i++)
+            {
+                random_code -= Math.Log(MirrorsAcceptRate[i]);
+                if (random_code < 0)
+                {
+                    currentMirror = i;
+                    break;
+                }
+            }
             currentData = new double[DataLength];
             for (int i = 0; i < DataLength; i++)
             {
                 currentData[i] = currentMinData_byMirrors[currentMirror][i];
             }
-            currentValue = currentMinValue_byMirrors[currentMirror];
+            //currentValue = currentMinValue_byMirrors[currentMirror];
 
         }
 
@@ -181,14 +181,14 @@ namespace Han_Obj_Viewer
 
         //        bool has_Accept = false;
 
-                
+
         //        //int dim_i = random.Next(DataLength);
         //        bool[] dim_visited = { false, false, false, false, false, false, false, false};
 
         //        for (int j = 0; j < 8; j++)
         //        {
         //            int dim_i = 0;
-                    
+
         //            while (true)
         //            {
         //                dim_i = random.Next(8);
@@ -320,7 +320,7 @@ namespace Han_Obj_Viewer
         //        if (!form.IsOpening)
         //            break;
         //    }//outer
-            
+
         //}
 
         public void DoSA(Form_SA form)
@@ -365,7 +365,7 @@ namespace Han_Obj_Viewer
                     //        break;
                     //    }
                     //}
-                    
+
 
                     //if (random.Next(MirrorsChangeRate) == 0)
                     //{
@@ -399,20 +399,21 @@ namespace Han_Obj_Viewer
                             //currentData_byMirrors[currentMirror] = nowData;
                             currentData = nowData;
 
+                            MirrorsAcceptRate[currentMirror]++;
+
                             if (nowValue < currentMinValue)
                             {
                                 currentMinValue = nowValue;
                                 currentMinData = nowData;
                                 currentMinData_byMirrors[currentMirror] = nowData;
 
-                                MirrorsAcceptRate[currentMirror]++;
                             }
 
-                            if (nowValue < currentMinValue_byMirrors[currentMirror])
-                            {
-                                currentMinValue_byMirrors[currentMirror] = nowValue;
-                            }
-                            
+                            //if (nowValue < currentMinValue_byMirrors[currentMirror])
+                            //{
+                            //    currentMinValue_byMirrors[currentMirror] = nowValue;
+                            //}
+
 
                             InnerAcceptCount++;
                             totalAccept++;
